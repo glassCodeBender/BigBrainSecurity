@@ -26,7 +26,8 @@ class MFTFilter:
         ext_df.to_csv('MFTfiltered_exts.csv', index=True)
                              
     """ 
-    Side Effect: Creates a new CSV file
+    Filters a MFT csv file that was converted into a datafame to only include 
+    relevant extensions.
     Param: DataFrame 
     Return: DataFrame - Filtered to only include relevant file extensions.
     """
@@ -47,7 +48,8 @@ class MFTFilter:
         return filtered_df
     
     """ 
-    Side Effect: Creates a new CSV file
+    Filters a MFT csv file that was converted into a datafame to only include the 
+    occurences of certains viruses.
     Param: DataFrame 
     Return: DataFrame - Filtered to only include relevant file extensions.
     """

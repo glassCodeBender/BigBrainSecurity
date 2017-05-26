@@ -3,6 +3,8 @@
 @Date: 5/25/2007
 @Version: 1.0
 
+Note: This program is far from complete. 
+
 Program Purpose: To filter a master file table to only include useful file
 extensions and to search a MFT for all the occurrences of certain viruses.
 """
@@ -10,8 +12,8 @@ extensions and to search a MFT for all the occurrences of certain viruses.
 import pandas as pd
 # import numpy as np
 import re
-import sys 
-import os 
+import sys
+import os
 
 class MFTCleaner:
     def __init__(self, imp_file, ext = '', vir_file = '', app_file = '', output_file = '',
@@ -25,27 +27,27 @@ class MFTCleaner:
         self.__end_date = end_date
         self.__start_time = start_time   # accepts a time to filter
         self.__end_time = end_time
-        self.__output_file = output_file 
+        self.__output_file = output_file
 
     def main(self):
         df = pd.DataFrame()
         df = df.from_csv("MftDump_2015-10-29_01-27-48.csv", sep='|')
         # df_attack_date = df[df.index == '2013-12-03'] # Creates an extra df for the sake of reference
-        ext_df = filter_by_exts(df)
+        ext_df = self.filter_by_exts(df)
         ext_df.to_csv('MFTfiltered_exts.csv', index=True)
 
     """ 
     Read a file line by line and return a list with items in each line.
     @Param A Filename
     @Return A list 
-    """ 
+    """
     def read_file(self, file):
         list = []
         with open(file) as f:
             for line in f:
                 list.append(line)
-        return list 
-    
+        return list
+
     """ 
     Method to filter a list of words and concatenate them into a regex
     @Param List of words provided by user to alternative file.
@@ -61,14 +63,14 @@ class MFTCleaner:
     @Return: DataFrame - Filtered to only include relevant file extensions. """
     def filter_by_exts(self, df):
         ext = self.__ext
-        extension = read_file(ext) 
-        user_reg = update_reg(extension)
-        
+        extension = self.read_file(ext)
+        user_reg = self.update_reg(extension)
+
         if extension is not None:
             pattern = r'' + user_reg
         else:
             pattern = r'.exe|.dll|.rar|.sys|.jar'
-            
+
         regex1 = re.compile(pattern, flags=re.IGNORECASE)
         df['mask'] = df[['Filename', 'Desc']].apply(lambda x: x.str.contains(regex1, regex=True)).any(axis=1)
         filt_df = df[df['mask'] == True]
@@ -89,8 +91,8 @@ class MFTCleaner:
     def filter_by_virus(self, df):
         virus_file = self.__virus_file
         outputf = self.__output_file
-        virus_list = read_file(virus_file) 
-        user_reg = update_reg(virus_list)
+        virus_list = self.read_file(virus_file)
+        user_reg = self.update_reg(virus_list)
         if user_reg is not None:
             pattern = r''+ user_reg
         else:
@@ -114,8 +116,8 @@ class MFTCleaner:
     def filter_by_app(self, df):
         appfile = self.__app_file
         outputf = self.__output_file
-        app_list = read_file(appfile) 
-        user_reg = update_reg(app_list)
+        app_list = self.read_file(appfile)
+        user_reg = self.update_reg(app_list)
         if user_reg is not None:
             pattern = r''+ user_reg
         else:

@@ -6,8 +6,11 @@
 Program Purpose: To filter a master file table to only include useful file
 extensions and to search a MFT for all the occurrences of certain viruses.
 
-Example Usage: ~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 6-21-2016 -e 6-23-2016'
-For more information use: ~$ python cleanMFT.py --help 
+Example Usage: 
+~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 6-21-2016 -e 6-23-2016'
+
+For More Information Type the Following Command into the Terminal: 
+~$ python cleanMFT.py --help 
       
 """
 

@@ -37,14 +37,19 @@ class MFTCleaner:
 
     """ This is the main method of the program. """
     def main(self):
+        sdate, edate, stime, etime = self.__start_date, self.__end_date, self.__start_time, self.__end_time
         output_file = self.__output_file
         mft_csv = self.__file
+        reg_file = self.__reg_file
         df = pd.DataFrame()
-        df = df.from_csv("MftDump_2015-10-29_01-27-48.csv", sep='|', parse_dates=[[1,2]] )
+        df = df.from_csv(mft_csv, sep='|', parse_dates=[[1,2]] )
         # df = df.from_csv("MftDump_2015-10-29_01-27-48.csv", sep='|')
         # df_attack_date = df[df.index == '2013-12-03'] # Creates an extra df for the sake of reference
-        df = self.filter_by_dates(df)
-        df = self.filter_by_filename(df)
+        if reg_file:
+            df = self.filter_by_filename(df)
+        if sdate or edate or stime or etime:
+            df = self.filter_by_dates(df)
+        
         df.to_csv(output_file, index=True)
 
     """ 

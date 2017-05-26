@@ -6,8 +6,11 @@
 Program Purpose: To filter a master file table to only include useful file
 extensions and to search a MFT for all the occurrences of certain viruses.
 
-Example Usage: ~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 6-21-2016 -e 6-23-2016'
-For more information use: ~$ python cleanMFT.py --help
+Example Usage: 
+~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 6-21-2016 -e 6-23-2016'
+
+For more information use: 
+~$ python cleanMFT.py --help
 
 Note: I can't test this program because the MFT dump I was working with has gone crazy. However, the core
 components of the program work. I used them to filter a large MFT dump based on file extensions and virus names yesterday.
@@ -118,10 +121,10 @@ class MFTCleaner:
             e_stamp = pd.Timestamp(edate)
             filtered_df = df[s_stamp:e_stamp]
         elif sdate and stime:
-            s_stamp = pd.Timestamp(sdate + ' ' stime)
+            s_stamp = pd.Timestamp(sdate + ' ' + stime)
             filtered_df = df[s_stamp:]
         elif edate and etime:
-            e_stamp = pd.Timestamp(edate + ' ' etime)
+            e_stamp = pd.Timestamp(edate + ' ' + etime)
             filtered_df = df[:e_stamp]
         elif sdate:
             s_stamp = pd.Timestamp(sdate)
@@ -180,7 +183,7 @@ class MFTCleaner:
 
         # moving parsed arguments to local variables just to be safe
         args = parser.parse_args()
-        file = args.file
+        filename = args.file
         regex = args.regex
         file_dest = args.file_dest
         sdate = args.start_date
@@ -188,9 +191,9 @@ class MFTCleaner:
         stime = args.start_time
         etime = args.end_time
 
-        assert os.path.exists( str(os.getcwd()) + '/' + file )
+        assert os.path.exists( str(os.getcwd()) + '/' + filename )
 
-        clean_MFT = MFTCleaner(file, regex, file_dest, sdate, edate, stime, etime)
+        clean_MFT = MFTCleaner(filename, regex, file_dest, sdate, edate, stime, etime)
         clean_MFT.main()
 
         if args.verbose:

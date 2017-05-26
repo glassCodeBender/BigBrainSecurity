@@ -3,8 +3,8 @@
 @Date: 5/25/2007
 @Version: 1.0
 
-Program Purpose: This program allows forensic professional to filter a Master File Table to only include useful file
-extensions, directories, or occurrences of certain viruses. Eventually I hope to make this program as a template for 
+Program Purpose: This program allows forensic professional to filter a Master File Table dumped into a csv file to 
+only include useful file extensions, directories, or occurrences of certain viruses. Eventually I hope to make this program as a template for 
 a larger file forensics program I will write with Apache Spark in Scala. 
 
 Example Usage: 

@@ -3,8 +3,9 @@
 @Date: 5/25/2007
 @Version: 1.0
 
-Program Purpose: To filter a master file table to only include useful file
-extensions and to search a MFT for all the occurrences of certain viruses.
+Program Purpose: This program allows forensic professional to filter a master file table to only include useful file
+extensions, directories, or occurrences of certain viruses. Eventually I hope to make this program as a template for 
+a larger file forensics program I will write with Apache Spark in Scala. 
 
 Example Usage: 
 ~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 6-21-2016 -e 6-23-2016'
@@ -14,7 +15,7 @@ For more information use:
 
 Note: I can't test this program because the MFT dump I was working with has gone crazy. However, the core
 components of the program work. I used them to filter a large MFT dump based on file extensions and virus names yesterday.
-However, I haven't tested the concatenated regular expressions or the date time filtering yet.
+However, I haven't tested the concatenated regular expressions or the datetime filtering yet.
 """
 
 import pandas as pd

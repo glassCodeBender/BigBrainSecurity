@@ -1,5 +1,5 @@
 """
-@glassCodeBender
+@Author: glassCodeBender
 @Date: 5/25/2007
 @Version: 1.0
 
@@ -16,7 +16,7 @@ import sys
 import os
 
 class MFTCleaner:
-    def __init__(self, imp_file, ext = '', vir_file = '', app_file = '', output_file = '',
+    def __init__(self, imp_file = "MftDump_2015-10-29_01-27-48.csv", ext = '', vir_file = '', app_file = '', output_file = '',
                  start_date = '', end_date = '', start_time = '', end_time = '' ):
         self.__file = imp_file
         self.__ext = ext                 # accepts a txt file
@@ -31,7 +31,8 @@ class MFTCleaner:
 
     def main(self):
         df = pd.DataFrame()
-        df = df.from_csv("MftDump_2015-10-29_01-27-48.csv", sep='|')
+        filename = self.__file
+        df = df.from_csv(filename, sep='|')
         # df_attack_date = df[df.index == '2013-12-03'] # Creates an extra df for the sake of reference
         ext_df = self.filter_by_exts(df)
         ext_df.to_csv('MFTfiltered_exts.csv', index=True)
@@ -57,10 +58,12 @@ class MFTCleaner:
         s = '|'
         new_reg = s.join(list)
         return new_reg
+    
     """ 
     Filters a MFT csv file that was converted into a DataFrame to only include relevant extensions.
     @Param: DataFrame 
-    @Return: DataFrame - Filtered to only include relevant file extensions. """
+    @Return: DataFrame - Filtered to only include relevant file extensions. 
+    """
     def filter_by_exts(self, df):
         ext = self.__ext
         extension = self.read_file(ext)

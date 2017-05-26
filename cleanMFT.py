@@ -4,8 +4,8 @@
 @Version: 1.0
 
 Program Purpose: This program allows forensic professional to filter a Master File Table dumped into a csv file to 
-only include useful file extensions, directories, or occurrences of certain viruses. Eventually I hope to make this program as a template for 
-a larger file forensics program I will write with Apache Spark in Scala. 
+only include useful file extensions, directories, or occurrences of certain viruses. Eventually I hope to use this program 
+as a template for a larger file forensics program I will write with Apache Spark in Scala. 
 
 Example Usage: 
 ~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 2016-06-21 -e 2016-06-21 -t 06:02:00 -u 06:02:01'
@@ -25,10 +25,11 @@ import os
 import argparse
 
 class MFTCleaner:
-    def __init__(self, import_file, reg_file = '', output_filename = '',
+    def __init__(self, import_file, reg_file = '', output_filename = '', suspicious = False,
                  start_date = '', end_date = '', start_time = '', end_time = '' ):
         self.__file = import_file
         self.__reg_file = reg_file       # accepts a txt file
+        self.__suspicious = suspicious
         self.__start_date = start_date   # accepts a date to filter
         self.__end_date = end_date
         self.__start_time = start_time   # accepts a time to filter
@@ -39,17 +40,20 @@ class MFTCleaner:
     def main(self):
         sdate, edate, stime, etime = self.__start_date, self.__end_date, self.__start_time, self.__end_time
         output_file = self.__output_file
+        suspicious = self.__suspicious
         mft_csv = self.__file
         reg_file = self.__reg_file
+        
         df = pd.DataFrame()
-        df = df.from_csv(mft_csv, sep='|', parse_dates=[[1,2]] )
+        df = df.from_csv(mft_csv, sep='|', parse_dates=[[0,1]] )
         # df = df.from_csv("MftDump_2015-10-29_01-27-48.csv", sep='|')
         # df_attack_date = df[df.index == '2013-12-03'] # Creates an extra df for the sake of reference
         if reg_file:
             df = self.filter_by_filename(df)
         if sdate or edate or stime or etime:
             df = self.filter_by_dates(df)
-
+        if suspicious:
+            df = self.filter_suspicious(df)
         df.to_csv(output_file, index=True)
 
     """ 
@@ -100,6 +104,26 @@ class MFTCleaner:
         filtered_df.drop(['mask', 'mask2'], axis=1, inplace=True)
         # filtered_df.reset_index(level=0, inplace=True)  # adds an integer index value.
         return filtered_df
+
+    """ 
+    Filters a MFT so that only the executables that were run outside Program Files are 
+    included in the table. 
+    @Param: DataFrame 
+    @Return: DataFrame - Filtered to only include relevant file extensions. 
+    """
+    def filter_suspicious(self, df):
+        pattern = r'^.+(Program\sFiles|System32).+[.exe]$'
+        regex1 = re.compile(pattern)
+        df['mask'] = df[['Filename', 'Desc']].apply(lambda x: x.str.contains(regex1, regex=True)).any(axis=1)
+        filt_df = df[df['mask'] == False]
+        
+        pattern2 = r'.exe$'
+        regex2 = re.compile(pattern2)
+        filt_df['mask2'] = filt_df[['Filename', 'Desc']].apply(lambda x: x.str.contains(regex2, regex=True)).any(axis=1)
+        filtered_df = filt_df[filt_df['mask2'] == True]
+        filtered_df.drop(['mask', 'mask2'], axis=1, inplace=True)
+        return filtered_df
+
 
     """ 
     Filters a MFT csv file that was converted into a Dataframe to only include the 
@@ -165,6 +189,8 @@ class MFTCleaner:
         parser.add_argument('-d', '--dest', action = 'store', dest = 'file_dest',
                             default = ( str(os.getcwd()) + "/updatedMFT.csv" ),
                             help = "Store the name of the file you'd like the program to create.")
+        parser.add_argument('-c', '--suspicious', action = 'store_true', help = "Include this flag if you want to return the MFT with a list of executables\n"
+                                                                            "that ran outside of Program Files or System32")
         parser.add_argument('-s', '--start-date', action = 'store', dest = 'start_date',
                             help = 'Enter a start date that you want to filter the table by.'
                                    'NOTE: If you DO NOT include an end date, the entire MFT table following\n'
@@ -196,10 +222,11 @@ class MFTCleaner:
         edate = args.end_date
         stime = args.start_time
         etime = args.end_time
+        susp = args.suspicious
 
         assert os.path.exists( str(os.getcwd()) + '/' + filename )
 
-        clean_MFT = MFTCleaner(filename, regex, file_dest, sdate, edate, stime, etime)
+        clean_MFT = MFTCleaner(filename, regex, file_dest, sdate, edate, stime, etime, susp )
         clean_MFT.main()
 
         if args.verbose:

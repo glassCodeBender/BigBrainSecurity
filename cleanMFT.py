@@ -160,10 +160,10 @@ class MFTCleaner:
                             help = "Import a file made up of the names of files you want to include in the filtered table.\n"
                                    "\nThis option create a regular expression based on a text file with different values on each line."
                                    "\n\t-Examples: Create a text file with different file extensions on each line. (.dll, .exe)"
-                                   "\n\t           Create a file made up of different virus names (WinCon.SFX, QueryStrategy.dll)"
+                                   "\n\t           Create a file made up of different virus names (WinCon.SFX, QueryStrategy.dll, stuxnet.exe)"
                                    "\n\t           Create a file made up of a combination of directory names and/or files.")
         parser.add_argument('-d', '--dest', action = 'store', dest = 'file_dest',
-                            default = ( str(os.getcwd()) + "/filteredcsvfile.csv" ),
+                            default = ( str(os.getcwd()) + "/updatedMFT.csv" ),
                             help = "Store the name of the file you'd like the program to create.")
         parser.add_argument('-s', '--start-date', action = 'store', dest = 'start_date',
                             help = 'Enter a start date that you want to filter the table by.'

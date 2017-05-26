@@ -3,12 +3,12 @@
 @Date: 5/25/2007
 @Version: 1.0
 
-Program Purpose: This program allows forensic professional to filter a master file table to only include useful file
+Program Purpose: This program allows forensic professional to filter a Master File Table to only include useful file
 extensions, directories, or occurrences of certain viruses. Eventually I hope to make this program as a template for 
 a larger file forensics program I will write with Apache Spark in Scala. 
 
 Example Usage: 
-~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 6-21-2016 -e 6-23-2016'
+~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 2016-06-21 -e 2016-06-21 -t 06:02:00 -u 06:02:01'
 
 For more information use: 
 ~$ python cleanMFT.py --help
@@ -49,7 +49,7 @@ class MFTCleaner:
             df = self.filter_by_filename(df)
         if sdate or edate or stime or etime:
             df = self.filter_by_dates(df)
-        
+
         df.to_csv(output_file, index=True)
 
     """ 

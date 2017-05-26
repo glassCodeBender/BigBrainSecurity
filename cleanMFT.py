@@ -15,7 +15,7 @@ For more information use:
 
 Note: I can't test this program because the MFT dump I was working with has gone crazy. However, the core
 components of the program work. I used them to filter a large MFT dump based on file extensions and virus names yesterday.
-However, I haven't tested the concatenated regular expressions or the datetime filtering yet.
+However, I haven't tested the concatenated regular expressions or the date time filtering yet.
 """
 
 import pandas as pd
@@ -136,7 +136,7 @@ class MFTCleaner:
         else:
             raise ValueError("You entered an invalid date to filter the table by or you did not include a date\n"
                              "to filter by. Please try again."
-                             "\n\tExample Usage: $ python cleanMFT.py -f MFT.csv -r regex.csv -s 6-28-2015 -e 6-30-2015")
+                             "\n\tExample Usage: $ python cleanMFT.py -f MFT.csv -r regex.csv -s 2015-06-08 -e 2015-06-30 -t 06:30:00 -u 06:31:20")
         return filtered_df
 
     """ Process command-line arguments. """
@@ -148,7 +148,7 @@ class MFTCleaner:
                                                         'you want included in the updated CSV file, file extensions (.exe, .dll, .sys), and/or programs (powershell).\n'
                                                         'cleanMFT.py will search the Master File Table CSV file and create a new CSV file that only includes matching rows.\n'
                                                         'Sample usage: '
-                                                        '\n\n\t~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 6-21-2016 -e 6-23-2016')
+                                                        '\n\n\t~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 2016-06-10 -e 2016-06-13')
         parser.add_argument('-f', '--file', action = 'store', dest = 'file',
                             help = "Store the name of the MFT csv file you want converted.")
         parser.add_argument('-r', '--regex-file', action = 'store', dest = 'regex',
@@ -169,13 +169,13 @@ class MFTCleaner:
                             help = 'Enter an end date that you want to filter a table by.'
                                    'Note: If you do not include a start date, the entire MFT will'
                                    'be included in the CSV up until the end date.'
-                                                                    '\n\tExample format: 6-27-2014')
+                                                                    '\n\tExample format: 2014-06-07')
         parser.add_argument('-t', '--start-time', action='store', dest = 'start_time',
                             help = 'Enter a start time to filter a table by in military time.'
-                                                                         '\n\tExample format: 06:25')
+                                                                         '\n\tExample format: 06:25:00')
         parser.add_argument('-u', '--end-time', action='store', dest = 'end_time',
                             help = 'Enter an end time to filter a table by in military time.'
-                                                                         '\n\tExample format: 19:25')
+                                                                         '\n\tExample format: 19:25:00')
         parser.add_argument('-v', '--verbose', action = 'store_true', help = 'Increase the verbosity of the program.')
 
         if len(sys.argv) < 2:

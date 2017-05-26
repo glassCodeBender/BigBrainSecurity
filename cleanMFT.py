@@ -1,11 +1,10 @@
-
 """
 @Author: glassCodeBender
 @Date: 5/25/2007
 @Version: 1.0
 
-Program Purpose: To filter a master file table to only include useful file
-extensions and to search a MFT for all the occurrences of certain viruses.
+Program Purpose: To filter a master file table (MFT) to only include useful file
+extensions and/or timeframes. 
 
 Example Usage: 
 ~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 6-21-2016 -e 6-23-2016'

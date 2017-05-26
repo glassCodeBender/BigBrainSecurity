@@ -39,7 +39,7 @@ class MFTCleaner:
         output_file = self.__output_file
         mft_csv = self.__file
         df = pd.DataFrame()
-        df = df.from_csv(mft_csv, sep='|')
+        df = df.from_csv("MftDump_2015-10-29_01-27-48.csv", sep='|', parse_dates=[[1,2]] )
         # df = df.from_csv("MftDump_2015-10-29_01-27-48.csv", sep='|')
         # df_attack_date = df[df.index == '2013-12-03'] # Creates an extra df for the sake of reference
         df = self.filter_by_dates(df)

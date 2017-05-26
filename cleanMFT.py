@@ -1,3 +1,4 @@
+
 """
 @Author: glassCodeBender
 @Date: 5/25/2007
@@ -14,7 +15,7 @@ For More Information Type the Following Command into the Terminal:
       
 Note: I can't test this program because the MFT dump I was working with has gone crazy. However, the core
 components of the program work. I used them to filter a large MFT dump based on file extensions and virus names yesterday.
-
+However, I haven't tested the concatenated regular expressions or the date time filtering yet.
 """
 
 import pandas as pd

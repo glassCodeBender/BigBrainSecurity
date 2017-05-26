@@ -21,15 +21,15 @@ import os
 import argparse
 
 class MFTCleaner:
-    def __init__(self, imp_file, reg_file = '', output_file = '',
+    def __init__(self, import_file, reg_file = '', output_filename = '',
                  start_date = '', end_date = '', start_time = '', end_time = '' ):
-        self.__file = imp_file
+        self.__file = import_file
         self.__reg_file = reg_file       # accepts a txt file
         self.__start_date = start_date   # accepts a date to filter
         self.__end_date = end_date
         self.__start_time = start_time   # accepts a time to filter
         self.__end_time = end_time
-        self.__output_file = output_file
+        self.__output_file = output_filename
 
     """ This is the main method of the program. """
     def main(self):
@@ -99,11 +99,11 @@ class MFTCleaner:
     @Return: DataFrame - Filtered to only include relevant virus names. 
     """
     def filter_by_dates(self, df):
-        
-        sdate = pd.Timestamp(self.__start_date)
-        edate = pd.Timestamp(self.__end_date)
-        stime = pd.Timestamp(self.__start_time)
-        etime = pd.Timestamp(self.__end_time)
+
+        sdate = self.__start_date
+        edate = self.__end_date
+        stime = self.__start_time
+        etime = self.__end_time
 
         if edate and sdate and etime and stime:
             s_stamp = pd.Timestamp(sdate + ' ' + stime)
@@ -124,9 +124,11 @@ class MFTCleaner:
             e_stamp = pd.Timestamp(edate + ' ' etime)
             filtered_df = df[:e_stamp]
         elif sdate:
-            filtered_df = df[sdate:]
+            s_stamp = pd.Timestamp(sdate)
+            filtered_df = df[s_stamp:]
         elif edate:
-            filtered_df = df[:edate]
+            e_stamp = pd.Timestamp(edate)
+            filtered_df = df[:e_stamp]
         else:
             raise ValueError("You entered an invalid date to filter the table by or you did not include a date\n"
                              "to filter by. Please try again."

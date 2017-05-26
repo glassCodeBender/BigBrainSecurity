@@ -181,6 +181,7 @@ class MFTCleaner:
         # moving parsed arguments to local variables just to be safe
         args = parser.parse_args()
         file = args.file
+        regex = args.regex
         file_dest = args.file_dest
         sdate = args.start_date
         edate = args.end_date
@@ -189,7 +190,7 @@ class MFTCleaner:
 
         assert os.path.exists( str(os.getcwd()) + '/' + file )
 
-        clean_MFT = MFTCleaner(file, file_dest, sdate, edate, stime, etime)
+        clean_MFT = MFTCleaner(file, regex, file_dest, sdate, edate, stime, etime)
         clean_MFT.main()
 
         if args.verbose:

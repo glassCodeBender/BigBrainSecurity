@@ -5,6 +5,10 @@
 
 Program Purpose: To filter a master file table to only include useful file
 extensions and to search a MFT for all the occurrences of certain viruses.
+
+Example Usage: ~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 6-21-2016 -e 6-23-2016'
+For more information use: ~$ python cleanMFT.py --help 
+      
 """
 
 import pandas as pd
@@ -23,12 +27,11 @@ class MFTCleaner:
         self.__start_time = start_time   # accepts a time to filter
         self.__end_time = end_time
         self.__output_file = output_file
-        
+
     """ This is the main method of the program. """
     def main(self):
         output_file = self.__output_file
         mft_csv = self.__file
-        
         df = pd.DataFrame()
         df = df.from_csv(mft_csv, sep='|')
         # df = df.from_csv("MftDump_2015-10-29_01-27-48.csv", sep='|')
@@ -117,7 +120,7 @@ class MFTCleaner:
         else:
             raise ValueError("You entered an invalid date to filter the table by or you did not include a date\n"
                              "to filter by. Please try again."
-                             "\n\tExample Usage: $ python filterMFT.py -f MFT.csv -r regex.csv -s 6-28-2015 -e 6-30-2015")
+                             "\n\tExample Usage: $ python cleanMFT.py -f MFT.csv -r regex.csv -s 6-28-2015 -e 6-30-2015")
         return filtered_df
 
     """ Process command-line arguments. """

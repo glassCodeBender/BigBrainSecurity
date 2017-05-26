@@ -3,15 +3,12 @@
 @Date: 5/25/2007
 @Version: 1.0
 
-Program Purpose: To filter a master file table (MFT) to only include useful file
-extensions and/or timeframes. 
+Program Purpose: To filter a master file table to only include useful file
+extensions and to search a MFT for all the occurrences of certain viruses.
 
-Example Usage: 
-~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 6-21-2016 -e 6-23-2016'
+Example Usage: ~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 6-21-2016 -e 6-23-2016'
+For more information use: ~$ python cleanMFT.py --help
 
-For More Information Type the Following Command into the Terminal: 
-~$ python cleanMFT.py --help 
-      
 Note: I can't test this program because the MFT dump I was working with has gone crazy. However, the core
 components of the program work. I used them to filter a large MFT dump based on file extensions and virus names yesterday.
 However, I haven't tested the concatenated regular expressions or the date time filtering yet.
@@ -102,10 +99,11 @@ class MFTCleaner:
     @Return: DataFrame - Filtered to only include relevant virus names. 
     """
     def filter_by_dates(self, df):
-        edate = self.__end_date
-        sdate = self.__start_date
-        etime = self.__end_time
-        stime = self.__start_time
+        
+        sdate = pd.Timestamp(self.__start_date)
+        edate = pd.Timestamp(self.__end_date)
+        stime = pd.Timestamp(self.__start_time)
+        etime = pd.Timestamp(self.__end_time)
 
         if edate and sdate and etime and stime:
             s_stamp = pd.Timestamp(sdate + ' ' + stime)
@@ -119,6 +117,12 @@ class MFTCleaner:
             s_stamp = pd.Timestamp(sdate + ' ' + stime)
             e_stamp = pd.Timestamp(edate)
             filtered_df = df[s_stamp:e_stamp]
+        elif sdate and stime:
+            s_stamp = pd.Timestamp(sdate + ' ' stime)
+            filtered_df = df[s_stamp:]
+        elif edate and etime:
+            e_stamp = pd.Timestamp(edate + ' ' etime)
+            filtered_df = df[:e_stamp]
         elif sdate:
             filtered_df = df[sdate:]
         elif edate:

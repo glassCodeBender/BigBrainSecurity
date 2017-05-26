@@ -12,6 +12,9 @@ Example Usage:
 For More Information Type the Following Command into the Terminal: 
 ~$ python cleanMFT.py --help 
       
+Note: I can't test this program because the MFT dump I was working with has gone crazy. However, the core
+components of the program work. I used them to filter a large MFT dump based on file extensions and virus names yesterday.
+
 """
 
 import pandas as pd

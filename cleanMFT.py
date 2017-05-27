@@ -1,6 +1,6 @@
 """
 @Author: glassCodeBender
-@Date: 5/27/2007
+@Date: 5/25/2007
 @Version: 1.0
 
 Program Purpose: This program allows forensic professional to filter a Master File Table dumped into a csv file to 
@@ -47,14 +47,13 @@ class MFTCleaner:
         mft_csv = self.__file
         reg_file = self.__reg_file
         index_bool = self.__index_bool
-        sindex, eindex = self.__filter_index.split('-')
-        if not sindex.isdigit or eindex.isdigit:
-            sindex = [x.strip() for x in sindex.split(',')]
-            eindex = [x.strip() for x in eindex.split(',')]
+        sindex, eindex = [x.strip() for x in self.__filter_index.split(',')]
+        if sindex.contains(',') or eindex.contains(','):
+            sindex.replace(',', '')
+            eindex.replace(',', '')
         if not sindex.isdigit and eindex.isdigit:
             raise ValueError("ERROR: The index value you entered to filter the table by was improperly formatted. \n"
                              "Please try to run the program again with different values.")
-            
         df = pd.DataFrame()
         df = df.from_csv(mft_csv, sep='|', parse_dates=[[0, 1]])
         # df = df.from_csv("MftDump_2015-10-29_01-27-48.csv", sep='|')
@@ -67,9 +66,7 @@ class MFTCleaner:
             df = self.filter_suspicious(df)
         if index_bool:
             df.reset_index(level=0, inplace=True)
-            if sindex and eindex:
-                sindex.replace(',', '')
-                eindex.replace(',', '')
+            if sindex and eindex:       
                 df = df[sindex : eindex]
         df.to_csv(output_file, index=True)
 
@@ -78,7 +75,6 @@ class MFTCleaner:
     @Param A Filename
     @Return A list 
     """
-
     def read_file(self, file):
         list = []
         with open(file) as f:
@@ -91,7 +87,6 @@ class MFTCleaner:
     @Param List of words provided by user to alternative file.
     @Return String that will be concatenated to a regex. 
     """
-
     def update_reg(self, list):
         s = '|'
         new_reg = s.join(list)
@@ -102,7 +97,6 @@ class MFTCleaner:
     @Param: DataFrame 
     @Return: DataFrame - Filtered to only include relevant file extensions. 
     """
-
     def filter_by_filename(self, df):
         reg_file = self.__reg_file
         reg_list = self.read_file(reg_file)
@@ -131,7 +125,6 @@ class MFTCleaner:
     @Param: DataFrame 
     @Return: DataFrame - Filtered to only include relevant file extensions. 
     """
-
     def filter_suspicious(self, df):
         pattern = r'^.+(Program\sFiles|System32).+[.exe]$'
         regex1 = re.compile(pattern)
@@ -151,7 +144,6 @@ class MFTCleaner:
     @Param: DataFrame 
     @Return: DataFrame - Filtered to only include relevant virus names. 
     """
-
     def filter_by_dates(self, df):
 
         sdate = self.__start_date

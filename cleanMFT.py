@@ -47,6 +47,7 @@ class MFTCleaner:
         mft_csv = self.__file
         reg_file = self.__reg_file
         index_bool = self.__index_bool
+        
         sindex, eindex = [x.strip() for x in self.__filter_index.split(',')]
         if sindex.contains(',') or eindex.contains(','):
             sindex.replace(',', '')

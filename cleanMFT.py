@@ -3,6 +3,9 @@
 @Date: 5/25/2007
 @Version: 1.0
 
+This program accepts a pipe separated value file--it's like a csv but with "|" inbetween the values. I'm 
+not sure which program outputs a pipe separated value file, but I assume the program is popular. 
+
 Program Purpose: This program allows is a prototype for a program I will write in Scala with Apache Spark
 for forensic professional to filter a Master File Table dumped into a csv. The program allows users
 to filter the program in a number of useful ways.

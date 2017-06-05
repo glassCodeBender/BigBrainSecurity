@@ -9,12 +9,12 @@ fine. The only problem is argparse.
 NOTE: This program accepts a pipe separated value file--it's like a csv but with "|" inbetween the values. I'm 
 not sure which program outputs a pipe separated value file, but I assume the program is popular. 
 
-Program Purpose: This program allows is a prototype for a program I will write in Scala with Apache Spark
+Program Purpose: This program is a lightweight version of a program I am writing in Scala with Apache Spark
 for forensic professional to filter a Master File Table dumped into a csv. The program allows users
 to filter the program in a number of useful ways.
 
 Example Usage: 
-~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 2016-06-21 -e 2016-06-21 -t 06:02:00 -u 06:02:01'
+~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -t
 
 For more information use: 
 ~$ python cleanMFT.py --help

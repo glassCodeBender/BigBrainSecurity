@@ -3,7 +3,10 @@
 @Date: 5/25/2007
 @Version: 1.0
 
-This program accepts a pipe separated value file--it's like a csv but with "|" inbetween the values. I'm 
+I'm not sure why this program still won't work. If you use the methods in your own program, cleanMFT.py works
+fine. The only problem is argparse. 
+
+NOTE: This program accepts a pipe separated value file--it's like a csv but with "|" inbetween the values. I'm 
 not sure which program outputs a pipe separated value file, but I assume the program is popular. 
 
 Program Purpose: This program allows is a prototype for a program I will write in Scala with Apache Spark
@@ -25,10 +28,10 @@ import pandas as pd
 import re
 import sys
 import os
-
+import argparse
 
 class MFTCleaner:
-    def __init__(self, import_file, reg_file='', output_filename='', suspicious=False, timeline = False,
+    def __init__(self, import_file= 'MftDump_2015-10-29_01-27-48.csv', reg_file='', output_filename='', suspicious=False, timeline = False,
                  start_date='', end_date='', start_time='', end_time='', index_bool = False, filter_index = ''):
         self.__file = import_file
         self.__reg_file = reg_file  # accepts a txt file
@@ -211,7 +214,6 @@ class MFTCleaner:
 
     """ Process command-line arguments. """
 if __name__ == '__main__':
-    import argparse
     parser = argparse.ArgumentParser(add_help=True,
                                      description='cleanMFT.py filters master file tables and makes them more bearable to deal with.\n'
                                                  'The primary use of the program is to import a text file made up of values separated by new lines\n'
@@ -259,14 +261,13 @@ if __name__ == '__main__':
                              'if you suspect that an attacker used timestomping.')
     parser.add_argument('-n', '--filter-index', action = 'store', dest='index_values', help='Enter the index values that you would like to include in the table seperated by a dash.'
                                                                        'For example: ~$ python cleanMFT.py -f MFTDump.csv -d filedest.csv -i -n 30,000-100,000')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Increase the verbosity of the program.'
+   # parser.add_argument('-v', '--verbose', action='store_true', help='Increase the verbosity of the program.'
 
   #  if len(sys.argv) < 1:
   #     parser.print_help()
   #      sys.exit(1)
         # moving parsed arguments to local variables just to be safe 
     args = parser.parse_args()
-    
     filename = args.file
     regex = args.regex
     file_dest = args.file_dest
@@ -274,11 +275,12 @@ if __name__ == '__main__':
     edate = args.end_date
     stime = args.start_time
     etime = args.end_time
-    susp = args.suspicious
+    susp = args.suspicious   
 
-    assert os.path.exists(str(os.getcwd()) + '/' + filename)
+    # assert os.path.exists(filename)
+  #   assert os.path.exists(str(os.getcwd()) + '/' + filename)
 
-    clean_MFT = MFTCleaner(filename, reg_file = regex, output_filename= file_dest, suspicious = susp,
+    clean_MFT = MFTCleaner(import_file=filename, reg_file = regex, output_filename= file_dest, suspicious = susp,
                                timeline = args.timeline, start_date= sdate, end_date= edate, start_time=stime,
                                end_time = etime, index_bool = args.index, filter_index = args.index_values)
     clean_MFT.main()

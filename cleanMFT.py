@@ -25,7 +25,7 @@ import pandas as pd
 import re
 import sys
 import os
-import argparse
+
 
 class MFTCleaner:
     def __init__(self, import_file, reg_file='', output_filename='', suspicious=False, timeline = False,
@@ -48,7 +48,7 @@ class MFTCleaner:
         output_file = self.__output_file
         timeline = self.__timeline 
         suspicious = self.__suspicious
-        mft_csv = self.__file
+        mft_csv = self.__file 
         reg_file = self.__reg_file
         index_bool = self.__index_bool
         
@@ -210,79 +210,79 @@ class MFTCleaner:
         return filtered_df
 
     """ Process command-line arguments. """
-    if __name__ == '__main__':
-        parser = argparse.ArgumentParser(add_help=True,
-                                         description='cleanMFT.py filters master file tables and makes them more bearable to deal with.\n'
-                                                     'The primary use of the program is to import a text file made up of values separated by new lines\n'
-                                                     'that you can filter the program by. For example, you can import a text file made up of directories\n'
-                                                     'you want included in the updated CSV file, file extensions (.exe, .dll, .sys), and/or programs (powershell).\n'
-                                                     'cleanMFT.py will search the Master File Table CSV file and create a new CSV file that only includes matching rows.\n'
-                                                     'Sample usage: '
-                                                     '\n\n\t~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 2016-06-10 -e 2016-06-13')
-        parser.add_argument('-f', '--file', action='store', dest='file',
-                            help="Store the name of the MFT csv file you want converted.")
-        parser.add_argument('-r', '--regex-file', action='store', dest='regex',
-                            help="Import a file made up of the names of files you want to include in the filtered table.\n"
-                                 "\nThis option create a regular expression based on a text file with different values on each line."
-                                 "\n\t-Examples: Create a text file with different file extensions on each line. (.dll, .exe)"
-                                 "\n\t           Create a file made up of different virus names (WinCon.SFX, QueryStrategy.dll, stuxnet.exe)"
-                                 "\n\t           Create a file made up of a combination of directory names and/or files.")
-        parser.add_argument('-d', '--dest', action='store', dest='file_dest',
-                            default=(str(os.getcwd()) + "/updatedMFT.csv"),
-                            help="Store the name of the file you'd like the program to create.")
-        parser.add_argument('-t', '--timeline', action='store_true', help = "Include this flag if you'd like to ignore SI entries and only\n"
-        "include F1 entries. This is a useful flag if you want to filter an MFT that has been timestomped and\n"
-        "you are trying to establish a realistic timeline. \n\n"
-        "Note: If you include this flag the other flags you include will be ignored.")
-        parser.add_argument('-c', '--suspicious', action='store_true',
-                            help="Include this flag if you want to return the MFT with a list of executables\n"
-                                 "that ran outside of Program Files or System32")
-        parser.add_argument('-s', '--start-date', action='store', dest='start_date',
-                            help='Enter a start date that you want to filter the table by.'
-                                 'NOTE: If you DO NOT include an end date, the entire MFT table following\n'
-                                 'the start date will be included in the CSV.'
-                                 '\n\tExample format: 6-23-2014')
-        parser.add_argument('-e', '--end-date', action='store', dest='end_date',
-                            help='Enter an end date that you want to filter a table by.'
-                                 'Note: If you do not include a start date, the entire MFT will'
-                                 'be included in the CSV up until the end date.'
-                                 '\n\tExample format: 2014-06-07')
-        parser.add_argument('-b', '--start-time', action='store', dest='start_time',
-                            help='Enter a start time to filter a table by in military time.'
-                                 '\n\tExample format: 06:25:00')
-        parser.add_argument('-u', '--end-time', action='store', dest='end_time',
-                            help='Enter an end time to filter a table by in military time.'
-                                 '\n\tExample format: 19:25:00')
-        parser.add_argument('-i', '--index', action='store_true',
-                            help='Use this flag if you want to add a numbered index to the table. This is especially useful \n'
-                                 'if you suspect that an attacker used timestomping.')
-        parser.add_argument('-n', '--filter-index', action = 'store', dest='index_values', help='Enter the index values that you would like to include in the table seperated by a dash.'
-                                                                           'For example: ~$ python cleanMFT.py -f MFTDump.csv -d filedest.csv -i -n 30,000-100,000')
-        parser.add_argument('-v', '--verbose', action='store_true', help='Increase the verbosity of the program.')
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(add_help=True,
+                                     description='cleanMFT.py filters master file tables and makes them more bearable to deal with.\n'
+                                                 'The primary use of the program is to import a text file made up of values separated by new lines\n'
+                                                 'that you can filter the program by. For example, you can import a text file made up of directories\n'
+                                                 'you want included in the updated CSV file, file extensions (.exe, .dll, .sys), and/or programs (powershell).\n'
+                                                 'cleanMFT.py will search the Master File Table CSV file and create a new CSV file that only includes matching rows.\n'
+                                                 'Sample usage: '
+                                                 '\n\n\t~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 2016-06-10 -e 2016-06-13')
+    parser.add_argument('-f', '--file', action='store', dest='file',
+                        help="Store the name of the MFT csv file you want converted.")
+    parser.add_argument('-r', '--regex-file', action='store', dest='regex',
+                        help="Import a file made up of the names of files you want to include in the filtered table.\n"
+                             "\nThis option create a regular expression based on a text file with different values on each line."
+                             "\n\t-Examples: Create a text file with different file extensions on each line. (.dll, .exe)"
+                             "\n\t           Create a file made up of different virus names (WinCon.SFX, QueryStrategy.dll, stuxnet.exe)"
+                             "\n\t           Create a file made up of a combination of directory names and/or files.")
+    parser.add_argument('-d', '--dest', action='store', dest='file_dest',
+                        default=(str(os.getcwd()) + "/updatedMFT.csv"),
+                        help="Store the name of the file you'd like the program to create.")
+    parser.add_argument('-t', '--timeline', action='store_true', help = "Include this flag if you'd like to ignore SI entries and only\n"
+    "include F1 entries. This is a useful flag if you want to filter an MFT that has been timestomped and\n"
+    "you are trying to establish a realistic timeline. \n\n"
+    "Note: If you include this flag all other flags will be ignored.")
+    parser.add_argument('-c', '--suspicious', action='store_true',
+                       help="Include this flag if you want to return the MFT with a list of executables\n"
+                             "that ran outside of Program Files or System32")
+    parser.add_argument('-s', '--start-date', action='store', dest='start_date',
+                        help='Enter a start date that you want to filter the table by.'
+                             'NOTE: If you DO NOT include an end date, the entire MFT table following\n'
+                             'the start date will be included in the CSV.'
+                             '\n\tExample format: 6-23-2014')
+    parser.add_argument('-e', '--end-date', action='store', dest='end_date',
+                        help='Enter an end date that you want to filter a table by.'
+                             'Note: If you do not include a start date, the entire MFT will'
+                             'be included in the CSV up until the end date.'
+                             '\n\tExample format: 2014-06-07')
+    parser.add_argument('-b', '--start-time', action='store', dest='start_time',
+                        help='Enter a start time to filter a table by in military time.'
+                             '\n\tExample format: 06:25:00')
+    parser.add_argument('-u', '--end-time', action='store', dest='end_time',
+                        help='Enter an end time to filter a table by in military time.'
+                             '\n\tExample format: 19:25:00')
+    parser.add_argument('-i', '--index', action='store_true',
+                        help='Use this flag if you want to add a numbered index to the table. This is especially useful \n'
+                             'if you suspect that an attacker used timestomping.')
+    parser.add_argument('-n', '--filter-index', action = 'store', dest='index_values', help='Enter the index values that you would like to include in the table seperated by a dash.'
+                                                                       'For example: ~$ python cleanMFT.py -f MFTDump.csv -d filedest.csv -i -n 30,000-100,000')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Increase the verbosity of the program.'
 
-        if len(sys.argv) < 2:
-            parser.print_help()
-            sys.exit(1)
+  #  if len(sys.argv) < 1:
+  #     parser.print_help()
+  #      sys.exit(1)
+        # moving parsed arguments to local variables just to be safe 
+    args = parser.parse_args()
+    
+    filename = args.file
+    regex = args.regex
+    file_dest = args.file_dest
+    sdate = args.start_date
+    edate = args.end_date
+    stime = args.start_time
+    etime = args.end_time
+    susp = args.suspicious
 
-        # moving parsed arguments to local variables just to be safe
-        args = parser.parse_args()
-        filename = args.file
-        regex = args.regex
-        file_dest = args.file_dest
-        timeline = args.timeline
-        sdate = args.start_date
-        edate = args.end_date
-        stime = args.start_time
-        etime = args.end_time
-        susp = args.suspicious
-        index_bool = args.index
-        filter_index = args.index_values
+    assert os.path.exists(str(os.getcwd()) + '/' + filename)
 
-        assert os.path.exists(str(os.getcwd()) + '/' + filename)
+    clean_MFT = MFTCleaner(filename, reg_file = regex, output_filename= file_dest, suspicious = susp,
+                               timeline = args.timeline, start_date= sdate, end_date= edate, start_time=stime,
+                               end_time = etime, index_bool = args.index, filter_index = args.index_values)
+    clean_MFT.main()
 
-        clean_MFT = MFTCleaner(filename, regex, file_dest, susp, timeline, sdate, edate, stime, etime, index_bool, filter_index)
-        clean_MFT.main()
-
-        if args.verbose:
-            assert isinstance(file_dest)
-            print('Your csv file has been filtered and saved to %s' % file_dest)
+    if args.verbose:
+        assert isinstance(file_dest)
+        print('Your csv file has been filtered and saved to %s' % file_dest)

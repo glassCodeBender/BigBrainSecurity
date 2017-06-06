@@ -1,21 +1,17 @@
 """
 @Author: glassCodeBender
-@Date: 5/25/2007
+@Date: 6/5/2007
 @Version: 1.0
 
-Program Purpose: This program allows forensic professional to filter a Master File Table dumped into a pipe separated csv 
-file to only include useful file extensions, directories, or occurrences of certain viruses. Eventually I hope to use 
-this program as a template for a larger file forensics program I will write with Apache Spark in Scala. 
+Program Purpose: This program allows forensic professional to filter a Master File Table dumped into a csv file to 
+only include useful file extensions, directories, or occurrences of certain viruses. Eventually I hope to use this program 
+as a template for a larger file forensics program I will write with Apache Spark in Scala. 
 
 Example Usage: 
-~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 2016-06-21 -t'
+~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -t
 
 For more information use: 
 ~$ python cleanMFT.py --help
-
-Note: I can't test this program because the MFT dump I was working with has gone crazy. However, the core
-components of the program work. I used them to filter a large MFT dump based on file extensions and virus names yesterday.
-However, I haven't tested the concatenated regular expressions or the date time filtering yet.
 """
 
 import pandas as pd
@@ -39,7 +35,7 @@ class MFTCleaner:
         self.__filter_index = filter_index
 
     """ This is the main method of the program. """
-    def main(self):
+    def run(self):
         sdate, edate, stime, etime = self.__start_date, self.__end_date, self.__start_time, self.__end_time
         output_file = self.__output_file
         suspicious = self.__suspicious
@@ -58,16 +54,16 @@ class MFTCleaner:
         df = df.from_csv(mft_csv, sep='|', parse_dates=[[0, 1]])
         # df = df.from_csv("MftDump_2015-10-29_01-27-48.csv", sep='|')
         # df_attack_date = df[df.index == '2013-12-03'] # Creates an extra df for the sake of reference
-        if index_bool:
-            df.reset_index(level=0, inplace=True)
-            if sindex and eindex:
-                df = df[sindex : eindex] 
         if reg_file:
             df = self.filter_by_filename(df)
         if sdate or edate or stime or etime:
             df = self.filter_by_dates(df)
         if suspicious:
             df = self.filter_suspicious(df)
+        if index_bool:
+            df.reset_index(level=0, inplace=True)
+            if sindex and eindex:
+                df = df[sindex : eindex]
         df.to_csv(output_file, index=True)
 
     """ 
@@ -191,15 +187,15 @@ if __name__ == '__main__':
                                                      'cleanMFT.py will search the Master File Table CSV file and create a new CSV file that only includes matching rows.\n'
                                                      'Sample usage: '
                                                      '\n\n\t~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 2016-06-10 -e 2016-06-13')
-    parser.add_argument('-f', '--file', action='store', dest='file',metavar='in-file', 
+    parser.add_argument('-f', '--file', action='store', dest='file',metavar='pathname',
                             help="Store the name of the MFT csv file you want converted.")
-    parser.add_argument('-r', '--regex-file', action='store', dest='regex',
+    parser.add_argument('-r', '--regex-file', action='store', dest='regex', metavar='pathname',
                             help="Import a file made up of the names of files you want to include in the filtered table.\n"
                                  "\nThis option create a regular expression based on a text file with different values on each line."
                                  "\n\t-Examples: Create a text file with different file extensions on each line. (.dll, .exe)"
                                  "\n\t           Create a file made up of different virus names (WinCon.SFX, QueryStrategy.dll, stuxnet.exe)"
                                  "\n\t           Create a file made up of a combination of directory names and/or files.")
-    parser.add_argument('-d', '--dest', action='store', dest='file_dest', metavar='out-file', 
+    parser.add_argument('-d', '--dest', action='store', dest='file_dest', metavar='pathname',
                             default=(str(os.getcwd()) + "/updatedMFT.csv"),
                             help="Store the name of the file you'd like the program to create.")
     parser.add_argument('-c', '--suspicious', action='store_true',
@@ -248,7 +244,7 @@ if __name__ == '__main__':
         assert os.path.exists(os.getcwd() + "\\" + str(filename))
 
         clean_MFT = MFTCleaner(filename, regex, file_dest, susp, sdate, edate, stime, etime, index_bool, filter_index)
-        clean_MFT.main()
+        clean_MFT.run()
 
         if args.verbose:
             assert isinstance(file_dest)

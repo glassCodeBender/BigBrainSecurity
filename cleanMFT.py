@@ -3,12 +3,12 @@
 @Date: 5/25/2007
 @Version: 1.0
 
-Program Purpose: This program allows forensic professional to filter a Master File Table dumped into a csv file to 
-only include useful file extensions, directories, or occurrences of certain viruses. Eventually I hope to use this program 
-as a template for a larger file forensics program I will write with Apache Spark in Scala. 
+Program Purpose: This program allows forensic professional to filter a Master File Table dumped into a pipe separated csv 
+file to only include useful file extensions, directories, or occurrences of certain viruses. Eventually I hope to use 
+this program as a template for a larger file forensics program I will write with Apache Spark in Scala. 
 
 Example Usage: 
-~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 2016-06-21 -e 2016-06-21 -t 06:02:00 -u 06:02:01'
+~$ python cleanMFT.py -f MFTDump.csv -r filterlist.txt -d updated_mft.csv -s 2016-06-21 -t'
 
 For more information use: 
 ~$ python cleanMFT.py --help
@@ -23,7 +23,6 @@ import re
 import sys
 import os
 import argparse
-
 
 class MFTCleaner:
     def __init__(self, import_file, reg_file='', output_filename='', suspicious=False,
@@ -59,16 +58,16 @@ class MFTCleaner:
         df = df.from_csv(mft_csv, sep='|', parse_dates=[[0, 1]])
         # df = df.from_csv("MftDump_2015-10-29_01-27-48.csv", sep='|')
         # df_attack_date = df[df.index == '2013-12-03'] # Creates an extra df for the sake of reference
+        if index_bool:
+            df.reset_index(level=0, inplace=True)
+            if sindex and eindex:
+                df = df[sindex : eindex] 
         if reg_file:
             df = self.filter_by_filename(df)
         if sdate or edate or stime or etime:
             df = self.filter_by_dates(df)
         if suspicious:
             df = self.filter_suspicious(df)
-        if index_bool:
-            df.reset_index(level=0, inplace=True)
-            if sindex and eindex:
-                df = df[sindex : eindex]
         df.to_csv(output_file, index=True)
 
     """ 

@@ -34,16 +34,20 @@ trait Setup {
 		val integrityConfirmed: Boolean = checkConfigIntegrity(configLoc)
 
 		val configArray: Array[String] = config.flatMap(x => x.split ( "~>" )).map(_.trim)
-		
+
 		/* Populate Map with variables that correspond to program settings */
 		var counter: Integer = 0
 		var configMap = Map[String, String](String -> String)
 		while (configArray.length > counter){
-			if (counter % 2 == 0) 
-				configMap += ( configArray(counter) -> configArray(counter + 2) )
+			if (counter % 2 == 0) {
+				configMap += ( configArray ( counter ) -> configArray ( counter + 2 ) )
+			}
+			if (counter % 1 != 0) {
+				configMap += ( configArray ( counter ) -> configArray ( counter + 2 ) )
+			}
 			counter += 1
 		} // END while populate Map
-		
+
 		return configMap // END for fullConfigMap val
 	} // END getConfig()
 

@@ -1,0 +1,38 @@
+# BIG BRAIN SECURITY CONFIGURATION FILE
+#
+# INSTRUCTIONS: To set any of the default settings in the program, remove the
+# “#” sign from the line and set the parameter to whatever value you wish
+# to use. 
+# 
+# EXAMPLE: “operating_system ~> Windows” is on a line without a “#” sign so
+# so the computer will read the line and include it as a part of the program. 
+# “filter_suspicious ~> false” on the other hand, is preceded by a “#” sign so the value
+# “true” is not read by the program. 
+# 
+# NOTE: ONLY LINES WITHOUT A “#” SIGN are read by the program.
+# 
+# THE FOLLOWING LINES DICTATE HOW THE PROGRAM OPERATES:
+#
+# INSTRUCTION: The only two options for the Operating System (OS) is “Mac” or “Windows”
+operating_system ~> Windows
+#
+# INSTRUCTION: The following “true” and “false” statements are CASE SENSITIVE:
+create_integer_index ~> true
+default_filter ~> true
+# filter_supicious ~> false
+# start_index ~> 0
+# end_index ~> 500000
+# start_time ~> 00:00:00
+# end_time ~>  12:00:00
+#
+# FILE AND DIRECTORY LOCATIONS
+# 
+# INPUT LOCATIONS
+mft_csv_location ~> “Users/glassCodeBender/Documents/MFTProject”
+text_file_with_values_to_include_in_output ~> “Users/glassCodeBender/Documents/viruslist.txt”
+prefetch_csv_directory_location ~> “Users/glassCodeBender/Documents/PrefetchProject”
+# 
+# OUTPUT LOCATIONS
+filtered_csv_output_location~> “Users/glassCodeBender/Documents/MFTProject/results.csv”
+all_csv_output_destination_directory ~> “Users/glassCodeBender/Documents/Security/BigBrainOutput”
+#

@@ -1,3 +1,4 @@
 # BigBrainSecurity
-Eventually this will be home to an IDS written in Scala and Python.
-Currently it is a storage space for security scripts I write. 
+This is the home to an IDS I'm writing with Apache Spark in Scala and Python.
+
+See config.txt for details on how to customize the program.

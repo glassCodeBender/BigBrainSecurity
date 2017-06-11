@@ -33,13 +33,18 @@ trait Setup {
 
 		val integrityConfirmed: Boolean = checkConfigIntegrity(configLoc)
 
-		var configMap = Map[String, String]
-		for { value <- config
-		      configMap += value.split ( "~>" ).map(_.trim).mkString
-		} // END for (populate configMap)
-		val finalMap = configMap.asInstanceOf[Map[String, String]]
-
-		return finalMap // END for fullConfigMap val
+		val configArray: Array[String] = config.flatMap(x => x.split ( "~>" )).map(_.trim)
+		
+		/* Populate Map with variables that correspond to program settings */
+		var counter: Integer = 0
+		var configMap = Map[String, String](String -> String)
+		while (configArray.length > counter){
+			if (counter % 2 == 0) 
+				configMap += ( configArray(counter) -> configArray(counter + 2) )
+			counter += 1
+		} // END while populate Map
+		
+		return configMap // END for fullConfigMap val
 	} // END getConfig()
 
 	/**
@@ -78,10 +83,5 @@ trait Setup {
 
 		return matchBool
 	} // END checkConfigIntegrity()
-
-	/*
-	* What should be configured?
-	* Everything but file locations.
-	* */
 
 } // END Setup trait

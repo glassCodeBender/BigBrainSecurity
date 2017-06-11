@@ -34,16 +34,15 @@ class BigBrainSecurity extends Setup {
 		val allCSVDir = configMap("all_csv_output_destination_directory")
 
 		/* Take config.txt input and place values in variables.  */
-		val createIntIndex: Boolean =  configMap("create_integer_index")
-		val filterSupicious: Boolean = configMap("filter_suspicious")
-		val defaultFilter = configMap("default_filter")
+		val createIntIndex: Boolean =  configMap("create_integer_index").toBoolean
+		val filterSupicious: Boolean = configMap("filter_suspicious").toBoolean
+		val defaultFilter: Boolean = configMap("default_filter").toBoolean 
 
 		// This is how this program will be used in the rest of the program.
 		val startIndex = configMap("start_index")
 		val endIndex = configMap("end_index")
 		val startTime = configMap("start_time")
 		val endTime = configMap("end_time")
-
 
 	/** Import and update variables using config file */
 	run()
@@ -65,9 +64,5 @@ class BigBrainSecurity extends Setup {
 	/** Update JSON and dependent files Checksums */
 
   } // END run()
-
-
-
-
-
+  
 } // END BigBrainSecurity class

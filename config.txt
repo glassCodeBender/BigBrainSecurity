@@ -24,6 +24,8 @@ default_filter ~> true
 # end_index ~> 500000
 # start_time ~> 00:00:00
 # end_time ~>  12:00:00
+# start_date ~> 2016-12-03
+# end_date ~> 2016-12-04
 #
 # FILE AND DIRECTORY LOCATIONS
 # 

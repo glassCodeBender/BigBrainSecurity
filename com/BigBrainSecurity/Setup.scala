@@ -40,15 +40,12 @@ trait Setup {
 		var configMap = Map[String, String](String -> String)
 		while (configArray.length > counter){
 			if (counter % 2 == 0) {
-				configMap += ( configArray ( counter ) -> configArray ( counter + 2 ) )
+				configMap += ( configArray ( counter ) -> configArray ( counter + 1 ) )
 			}
-			if (counter % 1 != 0) {
-				configMap += ( configArray ( counter ) -> configArray ( counter + 2 ) )
-			}
-			counter += 1
-		} // END while populate Map
+			counter = counter + 2
+		} // END while populate configMap
 
-		return configMap // END for fullConfigMap val
+		return configMap
 	} // END getConfig()
 
 	/**
@@ -87,5 +84,10 @@ trait Setup {
 
 		return matchBool
 	} // END checkConfigIntegrity()
+
+	/*
+	* What should be configured?
+	* Everything but file locations.
+	* */
 
 } // END Setup trait

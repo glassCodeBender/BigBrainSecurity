@@ -6,6 +6,8 @@ import java.sql.Timestamp
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.functions._ // needed to do a lot of things (unix_timestamp)
+import org.apache.spark.storage.StorageLevel
+/* Example: df.persist(StorageLevel.MEMORY_AND_DISK) or MEMORY_ONLY */
 
 import scala.io.Source
 
@@ -20,10 +22,7 @@ import scala.io.Source
 	*          environments with Apache Spark.
 	*/
 
-class CleanMFT extends Setup (val sqlContext: SQLContext,
-													    val iFile: String,
-                              val regFile: String,
-                              val oFile: String ){
+class CleanMFT extends Setup (val sqlContext: SQLContext){
 
 	/* Class will accept a SQLContext through it's constructor */
 	val spark = sqlContext
@@ -35,9 +34,7 @@ class CleanMFT extends Setup (val sqlContext: SQLContext,
 		.filterNot(_.contains("#"))
 
 	/* Stores all the file locations the program uses. */
-	private val importFile: String = iFile  // The fully qualified file name for the MFT Dump CSV.
 	private val regexFile: String = regFile // A text file with different items on each line to use for filter.
-	private val outputFile: String = oFile  // What should the csv file that is generated be named?
 
 	/**
 		* run()
@@ -46,23 +43,27 @@ class CleanMFT extends Setup (val sqlContext: SQLContext,
 		**/
 	def run (): Unit = {
 
-		/* String Filenames of different user input values. */
-		val tableFile = importFile     // stores the csv file location
-		val filterForRFile = regexFile // stores the user created list file location.
-		val destFileName = outputFile  // stores the name the user wants to use for the destination file.
+	  val configMap = super.Setup.getConfig()
 
-		/* Booleans to determine how the table should be filtered. */
-		val filterIndex = false // Filter the index for some reason?
-		val startIndex = None   // Value of the field that user wants to start filtering from.
-		val endIndex = None     // Value of the field that user wants to stop filtering at.
-		val indexBool = true    // Does the user want toadd
-		val suspicious = false  // Filter any exe that ran outside of System32 or Program Files.
+		/* Find file locations from config.txt */
+		val importFile = configMap("mft_csv_location")
+		val regexFile = configMap("text_file_with_values_to_include_in_output")
+		val outputName = configMap("filtered_csv_output_location")
+		val allCSVDir = configMap("all_csv_output_destination_directory")
 
-		/* These are used to create unix_timestamp objects. */
-		val startDate = None // Filter from this start date.
-		val endDate = None   // Filter until this end date.
-		val startTime = None // Filter from this start time
-		val endTime = None   // Filter until this end time.
+		/* Take config.txt input and place values in variables.  */
+		val filterIndex: Boolean =  configMap("create_integer_index").toBoolean
+		val suspicious: Boolean = configMap("filter_suspicious").toBoolean
+		val defaultFilter: Boolean = configMap("default_filter").toBoolean
+
+		/* Locations to filter by */
+		val startIndex = configMap("start_index")
+		val endIndex = configMap("end_index")
+		val startTime = configMap("start_time")
+		val endTime = configMap("end_time")
+		val startDate = configMap("start_date")
+		val endDate = configMap("end_date")
+
 
 		// WARNING!!!
 		// No concatenation to create timestamps.
@@ -79,9 +80,9 @@ class CleanMFT extends Setup (val sqlContext: SQLContext,
 
 		/* Filter DataFrame to only include EXEs outside System32 or Program Files */
 		if ( suspicious == true )
-		val suspiciousDF = filterSuspicious (
-			if ( indexDF != None ) filterSuspicious ( indexDF )
-			else filterSuspicious ( df ) )
+			val suspiciousDF = filterSuspicious (
+				if ( indexDF != None ) filterSuspicious ( indexDF )
+				else filterSuspicious ( df ) )
 
 		/* Filter DataFrame by list of Strings (Regex) */
 		if ( !regexFile.isEmpty ) {
@@ -222,6 +223,8 @@ class CleanMFT extends Setup (val sqlContext: SQLContext,
 	  // Add Index
 	  // Filter for Born
 	  // Filter
+
+	  df.filter()
 	  /* matches all Strings that ran in Program Files or System32 */
   	val regexSys32 = """^.+(Program\sFiles|System32).+[.exe]$""".r
 	  val regexExe = """.exe$""".r // matches all Strings that end with .exe

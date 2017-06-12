@@ -1,6 +1,7 @@
 package com.BigBrainSecurity
 
 import scala.io.Source
+import scala.collection.parallel.mutable.ParArray
 
 /**
 	* @Author: glassCodeBender
@@ -27,11 +28,11 @@ object AnalyzePrefetch extends FileFun with Setup {
 		* @params prefetchDir: String - Stores the directory that contains the prefetchfiles.
 		*         lookupFile: String - Stores the full qualified domain name connected to the
 	  *         text file with the huge list of possible file names (from hexacorn.com).
-	  * @return Unit : prints to console.
+	  * @return ParArray[String : Prints to console & then returns Array
 		* */
 
 	def analyze(prefetchDir: String, // Stores the directory that contains the prefetch files.
-	            lookupFile: String) = { // Stores the file with the huge list of possible file names.
+	            lookupFile: String): ParArray[String] = { // Stores the file with the huge list of possible file names.
 
 		val prefetchDirectory = prefetchDir  // stores prefetch directory location
 
@@ -70,5 +71,6 @@ object AnalyzePrefetch extends FileFun with Setup {
 		println()
 		scaryFiles.foreach(println)
 
+		return scaryFiles
 	} // END analyze()
 } // END AnalyzePrefetch

@@ -14,12 +14,18 @@ package com.BigBrainSecurity
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.functions._ // needed to do a lot of things (unix_timestamp)
+import org.apache.spark.storage.StorageLevel
+/* Example: df.persist(StorageLevel.MEMORY_AND_DISK) */
 
 import scala.io.Source
+import org.apache.spark.sql.SparkSession
 
 class BigBrainSecurity extends Setup {
 
-	/** Create SQLContext */
+	val spark = SparkSession
+		.builder
+		.appName("Big Brain Security")
+		.getOrCreate()
 
 	def main(args: Array[String]): Unit = {
 
@@ -36,7 +42,7 @@ class BigBrainSecurity extends Setup {
 		/* Take config.txt input and place values in variables.  */
 		val createIntIndex: Boolean =  configMap("create_integer_index").toBoolean
 		val filterSupicious: Boolean = configMap("filter_suspicious").toBoolean
-		val defaultFilter: Boolean = configMap("default_filter").toBoolean 
+		val defaultFilter: Boolean = configMap("default_filter").toBoolean
 
 		// This is how this program will be used in the rest of the program.
 		val startIndex = configMap("start_index")
@@ -64,5 +70,8 @@ class BigBrainSecurity extends Setup {
 	/** Update JSON and dependent files Checksums */
 
   } // END run()
-  
+
+
+
+
 } // END BigBrainSecurity class

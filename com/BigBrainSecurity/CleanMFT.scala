@@ -7,6 +7,7 @@ import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.functions._ // needed to do a lot of things (unix_timestamp)
 import org.apache.spark.storage.StorageLevel
+import org.apache.spark.sql.SparkSession // using this instead of Context
 /* Example: df.persist(StorageLevel.MEMORY_AND_DISK) or MEMORY_ONLY */
 
 import scala.io.Source
@@ -22,19 +23,10 @@ import scala.io.Source
 	*          environments with Apache Spark.
 	*/
 
-class CleanMFT extends Setup (val sqlContext: SQLContext){
+class CleanMFT extends Setup (val sqlSession: SQLSession){
 
-	/* Class will accept a SQLContext through it's constructor */
-	val spark = sqlContext
-
-	/* Read pre-written config file. The config file allows user to customize program. */
-	val config = Source.fromFile("Users/CodeStalkersRUS/Documents/ConfigFileStorage/config.txt")
-		.getLines
-		.toArray
-		.filterNot(_.contains("#"))
-
-	/* Stores all the file locations the program uses. */
-	private val regexFile: String = regFile // A text file with different items on each line to use for filter.
+	/* Class will accept a SQLSession through it's constructor */
+	val spark = sqlSession
 
 	/**
 		* run()

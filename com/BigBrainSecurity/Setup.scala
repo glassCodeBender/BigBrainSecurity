@@ -31,6 +31,7 @@ trait Setup {
 			.toArray
 			.filter( _.contains("#") )
 
+    /* compares hash value of past and current config file. Returns boolean. */
 		val integrityConfirmed: Boolean = checkConfigIntegrity(configLoc)
 
 		val configArray: Array[String] = config.flatMap(x => x.split ( "~>" )).map(_.trim)

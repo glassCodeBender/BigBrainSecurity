@@ -28,7 +28,7 @@ object AnalyzePrefetch extends FileFun with Setup {
 		* @params prefetchDir: String - Stores the directory that contains the prefetchfiles.
 		*         lookupFile: String - Stores the full qualified domain name connected to the
 	  *         text file with the huge list of possible file names (from hexacorn.com).
-	  * @return ParArray[String : Prints to console & then returns Array
+	  * @return Unit : prints to console.
 		* */
 
 	def analyze(prefetchDir: String, // Stores the directory that contains the prefetch files.

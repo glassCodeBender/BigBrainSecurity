@@ -19,9 +19,18 @@ operating_system ~> Windows
 # INSTRUCTION: The following “true” and “false” statements are CASE SENSITIVE:
 create_integer_index ~> true
 default_filter ~> true
-# filter_supicious ~> false
+fix_timestamp ~> true 
+#
+# MFT FILTER OPTION: Set the command below to “true” to ONLY include .exe FILES THAT RAN 
+# OUTSIDE of System32 AND Program Files:
+# filter_suspicious ~> false
+# 
+# MFT FILTER OPTION: Change the values in start_index and end_index to the INDEX values you
+# want to include in the program:
 # start_index ~> 0
 # end_index ~> 500000
+#
+# MFT FILTER OPTION: Change the values to the TIMES and DATES you want to filter with:
 # start_time ~> 00:00:00
 # end_time ~>  12:00:00
 # start_date ~> 2016-12-03
@@ -38,3 +47,13 @@ prefetch_csv_directory_location ~> “Users/glassCodeBender/Documents/PrefetchPr
 filtered_csv_output_location~> “Users/glassCodeBender/Documents/MFTProject/results.csv”
 all_csv_output_destination_directory ~> “Users/glassCodeBender/Documents/Security/BigBrainOutput”
 #
+# AUTHOR’S NOTE:
+# 
+# I am looking for a job with a company in the greater San Antonio and Austin area. Mostly, I’m looking for a company 
+# where I can learn a lot from my co-workers. When I work on something that excites me, I become obsessed.
+# I’ve only been coding for a year and I never took an “official” college class on Python or Scala. In reality, I’ve
+# audited over 10 programming centered courses on algorithms, databases, programming languages, 
+# data structures, regression algorithms, and machine learning. I’ve also put in a lot of work teaching myself 
+# statistics, linear algebra, gradient descent, calculus, and partial derivatives. I’m looking for a job with 
+# a company that does machine learning for cyber security, but I’ll learn anything my boss tells me to learn.
+# 

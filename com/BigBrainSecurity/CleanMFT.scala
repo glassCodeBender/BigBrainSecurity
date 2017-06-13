@@ -23,7 +23,7 @@ import scala.io.Source
 	*          environments with Apache Spark.
 	*/
 
-class CleanMFT extends Setup (val sqlSession: SQLSession){
+object CleanMFT extends Setup (val sqlSession: SQLSession){
 
 	/* Class will accept a SQLSession through it's constructor */
 	val spark = sqlSession
@@ -33,7 +33,7 @@ class CleanMFT extends Setup (val sqlSession: SQLSession){
 		* This method does all the work.
 		* @return Unit
 		**/
-	def run (): Unit = {
+	def runCleanMFT (): Unit = {
 
 	  val configMap = super.Setup.getConfig()
 
@@ -102,14 +102,27 @@ class CleanMFT extends Setup (val sqlSession: SQLSession){
 			val dateDF = filterByDate ( theDF, timeStamp._1, timeStamp._2 )
 		} // END if statement filter by date
 
+	  /* Filter DataFrame with default filter */
+	  if (defaultFilter) {
+			if(dateDF != None)
+				val finalDf = defaultFilter(dateDF)
+			else
+				val finalDF = defaultFilter(theDF)
+	} // END if
+
 		/* Save the processed Data to a compressed file. */
-		if ( dateDF != None ) dateDF.saveAsSequenceFile ( "Users/lupefiascoisthebestrapper/Documents/MFT" )
-		else theDF.saveAsSequenceFile ( "Users/lupefiascoisthebestrapper/Documents/MFT" )
+		if (finalDF.isEmpty) {
+			if (dateDF != None) dateDF.saveAsSequenceFile ("Users/lupefiascoisthebestrapper/Documents/MFT")
+			else theDF.saveAsSequenceFile ("Users/lupefiascoisthebestrapper/Documents/MFT")
+			System.exit(0)
+		} // END finalDF.isEmpty
+		finalDF.saveAsSequenceFile("Users/lupefiascoisthebestrapper/Documents/MFT")
+
 
 		// if option to filter by index is true where do we get the index locations?
 		// probably a method.
 
-	} // END run()
+	} // END runCleanMFT()
 	/** ******************************END OF THE DRIVER PROGRAM **********************************/
 	/** *****************************************************************************************/
 	/** *****************************************************************************************/
@@ -140,6 +153,17 @@ class CleanMFT extends Setup (val sqlSession: SQLSession){
 	} // END makeTimeStamp()
 
 	/**
+		* defaultFilter()
+		* Filters DataFrame to only include the following extensions: .exe|.dll|.rar|.sys|.jar.
+		* Program also remove rows that are not helpful for forensics.
+		* @param DataFrame
+		* @return DataFrame
+		*/
+
+	def defaultFilter(df: DataFrame): DataFrame = {
+		val regex = """.exe$|.dll$|.rar$|.sys$|.jar$""".r
+}
+	/**
 		* indexFilter()
 		* Filters a DataFrame based on start and ending index locations.
 		*
@@ -162,9 +186,21 @@ class CleanMFT extends Setup (val sqlSession: SQLSession){
 
 	} // END indexFilter()
 
-	def defaultFilter(df): DataFrame = {
-	  reg = """Entry$|Modified$""".r
-		updatedDF = df.map( reg.findAllIn($"Type") )
+
+	/**
+		* defaultFilter()
+		* Filters DataFrame to only include the following extensions: .exe|.dll|.rar|.sys|.jar.
+		* Program also remove rows that are not helpful for forensics.
+		* @param DataFrame
+		* @return DataFrame
+		*/
+
+	def defaultFilter(df: DataFrame): DataFrame = {
+	  val regType = """Entry$|Modified$""".r
+		val updatedDF = df.map( regType.findAllIn($"Type") )
+
+	  val regexExt = """.exe$|.dll$|.rar$|.sys$|.jar$""".r
+		val defaultDF = updateDF.map( regexExt.findAllIn($"Desc"))
 
 	  return updatedDF
 } // END defaultFilter()

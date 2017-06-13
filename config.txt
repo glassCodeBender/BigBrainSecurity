@@ -5,8 +5,8 @@
 # to use. 
 # 
 # EXAMPLE: “operating_system ~> Windows” is on a line without a “#” sign so
-# so the computer will read the line and include it as a part of the program. 
-# “filter_suspicious ~> false” on the other hand, is preceded by a “#” sign so the value
+# the computer reads the line and includes it as a part of the program. On the other hand,
+# “filter_suspicious ~> false” is preceded by a “#” sign so the value
 # “true” is not read by the program. 
 # 
 # NOTE: ONLY LINES WITHOUT A “#” SIGN are read by the program.
@@ -17,8 +17,12 @@
 operating_system ~> Windows
 #
 # INSTRUCTION: The following “true” and “false” statements are CASE SENSITIVE:
+# 
+# MFT FILTER OPTION: Create a numbered index from 0 to the size of the table:
 create_integer_index ~> true
+# MFT FILTER OPTION: Filter to only include .exe, .jar, .rar, .dll, and .sys extensions.
 default_filter ~> true
+# MFT FILTER OPTION: This program is a work-in-process.
 fix_timestamp ~> true 
 #
 # MFT FILTER OPTION: Set the command below to “true” to ONLY include .exe FILES THAT RAN 
@@ -57,4 +61,3 @@ all_csv_output_destination_directory ~> “Users/glassCodeBender/Documents/Secur
 # machine learning. I’ve also taught myself a lot about statistics, linear algebra, gradient descent, calculus, and partial 
 # derivatives. My ultimate goal is to work for a company that does machine learning for cyber security, but I’ll learn 
 # anything my boss tells me to learn.
-# 

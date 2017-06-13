@@ -1,6 +1,6 @@
 # BIG BRAIN SECURITY CONFIGURATION FILE
 #
-# INSTRUCTIONS: To set any of the default settings in the program, remove the
+# INSTRUCTIONS: To set custom settings for the program, remove the
 # “#” sign from the line and set the parameter to whatever value you wish
 # to use. 
 # 
@@ -51,9 +51,10 @@ all_csv_output_destination_directory ~> “Users/glassCodeBender/Documents/Secur
 # 
 # I am looking for a job with a company in the greater San Antonio and Austin area. Mostly, I’m looking for a company 
 # where I can learn a lot from my co-workers. When I work on something that excites me, I become obsessed.
-# I’ve only been coding for a year and I never took an “official” college class on Python or Scala. In reality, I’ve
-# audited over 10 programming centered courses on algorithms, databases, programming languages, 
-# data structures, regression algorithms, and machine learning. I’ve also put in a lot of work teaching myself 
-# statistics, linear algebra, gradient descent, calculus, and partial derivatives. I’m looking for a job with 
-# a company that does machine learning for cyber security, but I’ll learn anything my boss tells me to learn.
+# I’ve only been coding for a year and I never took an “official” college class on Python or Scala. Nevertheless, 
+# I wrote Big Brain Security in languages great in great languages for big data. I’ve audited over 10 programming 
+# centered courses on algorithms, databases, programming languages, data structures, regression algorithms, and 
+# machine learning. I’ve also taught myself a lot about statistics, linear algebra, gradient descent, calculus, and partial 
+# derivatives. My ultimate goal is to work for a company that does machine learning for cyber security, but I’ll learn 
+# anything my boss tells me to learn.
 # 

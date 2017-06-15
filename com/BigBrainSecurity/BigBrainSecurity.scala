@@ -13,24 +13,32 @@ package com.BigBrainSecurity
 
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.functions._ // needed to do a lot of things (unix_timestamp)
+import org.apache.spark.sql.functions._
 import org.apache.spark.storage.StorageLevel
+
+import scala.collection.parallel.mutable.ParArray
 /* Example: df.persist(StorageLevel.MEMORY_AND_DISK) */
 
 import scala.io.Source
 import org.apache.spark.sql.SparkSession
 
-class BigBrainSecurity extends Setup {
+import com.BigBrainSecurity.{AnalyzePrefetch, CleanMFT, IntegrityCheck}
+
+class BigBrainSecurity extends CleanMFT with Setup {
 
 	val spark = SparkSession
-		.builder
+		.builder()
 		.appName("Big Brain Security")
+		.enableHiveSupport()
 		.getOrCreate()
 
-	def main(args: Array[String]): Unit = {
+	def main(args: Array[String]): Unit = run()// END main()
 
+	def run(): Unit = {
+
+		/***********************VARIABLE DECLARATIONS***************************/
 		/* Create map of values from config file. */
-	  val configMap = super.getConfig()
+		val configMap = super.getConfig()
 
 		/* Find file locations from config.txt */
 		val mftTable = configMap("mft_csv_location")
@@ -38,6 +46,7 @@ class BigBrainSecurity extends Setup {
 		val prefetchDirectory = configMap("prefetch_csv_directory_location")
 		val outputCSVName = configMap("filtered_csv_output_location")
 		val allCSVDir = configMap("all_csv_output_destination_directory")
+		val safePrefetchList = configMap("safe_prefetch_list")
 
 		/* Take config.txt input and place values in variables.  */
 		val createIntIndex: Boolean =  configMap("create_integer_index").toBoolean
@@ -50,12 +59,12 @@ class BigBrainSecurity extends Setup {
 		val startTime = configMap("start_time")
 		val endTime = configMap("end_time")
 
-	/** Import and update variables using config file */
-	run()
+		/**************************** METHOD CALLS ***************************/
+		/* Unit: Creates CSVs */
+		super.runCleanMFT(spark)
 
-	} // END main()
-
-	def run(): Unit = {
+		/* Contains an Array of filenames that the user should check for tampering */
+		val prefetch: ParArray[String] = AnalyzePrefetch.analyze(prefetchDirectory, safePrefetchList)
 
 	/** Run Integrity Check */
 
@@ -70,8 +79,5 @@ class BigBrainSecurity extends Setup {
 	/** Update JSON and dependent files Checksums */
 
   } // END run()
-
-
-
 
 } // END BigBrainSecurity class

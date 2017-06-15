@@ -18,7 +18,7 @@ trait Setup {
 	/**
 		* getConfig()
 		* This section of the program does most of the work.
-		* @return Unit
+		* @return Map[String, String]
 		*/
 	def getConfig(): Map[String, String] = {
 
@@ -39,11 +39,10 @@ trait Setup {
 		/* Populate Map with variables that correspond to program settings */
 		var counter: Integer = 0
 		var configMap = Map[String, String](String -> String)
+
 		while (configArray.length > counter){
-			if (counter % 2 == 0) {
 				configMap += ( configArray ( counter ) -> configArray ( counter + 1 ) )
-			}
-			counter = counter + 2
+			  counter = counter + 2
 		} // END while populate configMap
 
 		return configMap

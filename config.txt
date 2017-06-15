@@ -46,6 +46,7 @@ fix_timestamp ~> true
 mft_csv_location ~> “Users/glassCodeBender/Documents/MFTProject”
 text_file_with_values_to_include_in_output ~> “Users/glassCodeBender/Documents/viruslist.txt”
 prefetch_csv_directory_location ~> “Users/glassCodeBender/Documents/PrefetchProject”
+safe_prefetch_list ~> “Users/glassCodeBender/Documents/security/prefetch_hashes_lookup.txt”
 # 
 # OUTPUT LOCATIONS
 filtered_csv_output_location~> “Users/glassCodeBender/Documents/MFTProject/results.csv”
@@ -61,3 +62,4 @@ all_csv_output_destination_directory ~> “Users/glassCodeBender/Documents/Secur
 # machine learning. I’ve also taught myself a lot about statistics, linear algebra, gradient descent, calculus, and partial 
 # derivatives. My ultimate goal is to work for a company that does machine learning for cyber security, but I’ll learn 
 # anything my boss tells me to learn.
+# 

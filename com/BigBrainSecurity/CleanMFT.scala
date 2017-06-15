@@ -4,10 +4,10 @@ import java.io.IOException
 import java.sql.Timestamp
 
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
+import org.apache.spark.sql.functions._      // needed to do a lot of things (unix_timestamp)
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.functions._ // needed to do a lot of things (unix_timestamp)
-import org.apache.spark.storage.StorageLevel
-import org.apache.spark.sql.SparkSession // using this instead of Context
+import org.apache.spark.sql.SparkSession     // using this instead of Context
+import org.apache.spark.storage.StorageLevel // needed to change how persist() caches data.
 /* Example: df.persist(StorageLevel.MEMORY_AND_DISK) or MEMORY_ONLY */
 
 import scala.io.Source
@@ -23,19 +23,17 @@ import scala.io.Source
 	*          environments with Apache Spark.
 	*/
 
-object CleanMFT extends Setup (val sqlSession: SQLSession){
-
-	/* Class will accept a SQLSession through it's constructor */
-	val spark = sqlSession
+trait CleanMFT extends Setup{
 
 	/**
-		* run()
+		* runCleanMFT()
 		* This method does all the work.
 		* @return Unit
 		**/
-	def runCleanMFT (): Unit = {
+	def runCleanMFT (spark: SparkSession): Unit = {
 
-	  val configMap = super.Setup.getConfig()
+		/* Get a map of configurations for the program from Setup.scala */
+	  val configMap = super.getConfig()
 
 		/* Find file locations from config.txt */
 		val importFile = configMap("mft_csv_location")
@@ -56,8 +54,6 @@ object CleanMFT extends Setup (val sqlSession: SQLSession){
 		val startDate = configMap("start_date")
 		val endDate = configMap("end_date")
 
-
-		// WARNING!!!
 		// No concatenation to create timestamps.
 		/* import csv file and convert it into a DataFrame */
 		val df = spark.read.format ( "com.databricks.spark.csv" )
@@ -65,6 +61,8 @@ object CleanMFT extends Setup (val sqlSession: SQLSession){
 			.option ( "header" = true )
 			.option ( "inferSchema", true )
 			.load ( importFile ).cache ( )
+
+		/* TIMESTOMP FILTER */
 
 		/* Filter DataFrame by index location */
 		if ( startIndex != None || endIndex != None )
@@ -123,9 +121,9 @@ object CleanMFT extends Setup (val sqlSession: SQLSession){
 		// probably a method.
 
 	} // END runCleanMFT()
-	/** ******************************END OF THE DRIVER PROGRAM **********************************/
-	/** *****************************************************************************************/
-	/** *****************************************************************************************/
+	/********************************END OF THE DRIVER PROGRAM *********************************/
+	/*******************************************************************************************/
+	/*******************************************************************************************/
 
 	/**
 		* makeTimeStamp()
@@ -152,16 +150,6 @@ object CleanMFT extends Setup (val sqlSession: SQLSession){
 		return (startStamp, endStamp) // returns tuple with start and end timestamps
 	} // END makeTimeStamp()
 
-	/**
-		* defaultFilter()
-		* Filters DataFrame to only include the following extensions: .exe|.dll|.rar|.sys|.jar.
-		* Program also remove rows that are not helpful for forensics.
-		* @param DataFrame
-		* @return DataFrame
-		*/
-
-	def defaultFilter(df: DataFrame): DataFrame = {
-		val regex = """.exe$|.dll$|.rar$|.sys$|.jar$""".r
 }
 	/**
 		* indexFilter()
@@ -186,7 +174,6 @@ object CleanMFT extends Setup (val sqlSession: SQLSession){
 
 	} // END indexFilter()
 
-
 	/**
 		* defaultFilter()
 		* Filters DataFrame to only include the following extensions: .exe|.dll|.rar|.sys|.jar.
@@ -194,7 +181,6 @@ object CleanMFT extends Setup (val sqlSession: SQLSession){
 		* @param DataFrame
 		* @return DataFrame
 		*/
-
 	def defaultFilter(df: DataFrame): DataFrame = {
 	  val regType = """Entry$|Modified$""".r
 		val updatedDF = df.map( regType.findAllIn($"Type") )
@@ -259,15 +245,14 @@ object CleanMFT extends Setup (val sqlSession: SQLSession){
 
 } // END findTimestomping()
 
-
 	/**
 		* filterByDate()
 		* Filters a MFT csv file that was converted into a Dataframe to only include the
 		* occurrences of certain dates and/or times.
 		*
 		* @param df    DataFrame
-		* @param sDate String
-		* @param eDate String
+		* @param sDate String - Start Date
+		* @param eDate String - End Date
 		* @return DataFrame - Filtered to only include relevant virus names.
 		*/
 	def filterByDate ( df: DataFrame,
@@ -307,19 +292,3 @@ object CleanMFT extends Setup (val sqlSession: SQLSession){
 	} // END updateReg()
 
 } // END CleanMFT.scala
-
-	/*****************************************************************************************/
-	/*****************************************************************************************/
-	/*****************************************************************************************/
-	/*****************************************************************************************/
-	/*****************************************************************************************/
-	/*************************** THIS IS THE END OF THE PROGRAM ******************************/
-	/*****************************************************************************************/
-	/*****************************************************************************************/
-	/*****************************************************************************************/
-	/*****************************************************************************************/
-	/*****************************************************************************************/
-	/*****************************************************************************************/
-	/*****************************************************************************************/
-	/*****************************************************************************************/
-	/*****************************************************************************************

@@ -11,9 +11,6 @@ import scala.collection.parallel.mutable.ParArray
 	* Note: This program only works for Windows 7 and earlier. I'm not sure which
 	* version of Windows Server this goes up to.
 	*
-	* Other note: This class should almost exclusively use collections made up of
-	* String objects.
-	*
 	* Program Purpose: This program looks at a directory full of prefetch files and locates
 	* inconsistencies.
 	*

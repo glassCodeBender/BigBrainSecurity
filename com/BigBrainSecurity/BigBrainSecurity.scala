@@ -3,12 +3,12 @@ package com.BigBrainSecurity
 /**
   * (@)Author: glassCodeBender
   * (#)Version: 1.0
-  * (#)Date: 6/11/2016
-  *
-	* CONTAINS MAIN METHOD!!
+  * (#)Date: 6/11/2017
 	*
   * PROGRAM PURPOSE: This is the driver program for Big Brain Security
 	* forensics and IDS software.
+	*
+	* CONTAINS MAIN METHOD!
   */
 
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
@@ -24,7 +24,7 @@ import org.apache.spark.sql.SparkSession
 
 import com.BigBrainSecurity.{AnalyzePrefetch, CleanMFT, IntegrityCheck}
 
-class BigBrainSecurity extends CleanMFT with Setup {
+class BigBrainSecurity with Setup {
 
 	val spark = SparkSession
 		.builder()
@@ -32,8 +32,9 @@ class BigBrainSecurity extends CleanMFT with Setup {
 		.enableHiveSupport()
 		.getOrCreate()
 
-	def main(args: Array[String]): Unit = run()// END main()
+	def main(args: Array[String]): Unit = run() // END main()
 
+	/*************************FUNCTIONAL MAIN METHOD**************************/
 	def run(): Unit = {
 
 		/***********************VARIABLE DECLARATIONS***************************/
@@ -41,7 +42,7 @@ class BigBrainSecurity extends CleanMFT with Setup {
 		val configMap = super.getConfig()
 
 		/* Find file locations from config.txt */
-		val mftTable = configMap("mft_csv_location")
+		val mftTaable = configMap("mft_csv_location")
 		val regexTxtFile = configMap("text_file_with_values_to_include_in_output")
 		val prefetchDirectory = configMap("prefetch_csv_directory_location")
 		val outputCSVName = configMap("filtered_csv_output_location")
@@ -54,29 +55,41 @@ class BigBrainSecurity extends CleanMFT with Setup {
 		val defaultFilter: Boolean = configMap("default_filter").toBoolean
 
 		// This is how this program will be used in the rest of the program.
-		val startIndex = configMap("start_index")
-		val endIndex = configMap("end_index")
-		val startTime = configMap("start_time")
-		val endTime = configMap("end_time")
+		lazy val startIndex = configMap("start_index")
+		lazy val endIndex = configMap("end_index")
+		lazy val startTime = configMap("start_time")
+		lazy val endTime = configMap("end_time")
 
-		/**************************** METHOD CALLS ***************************/
-		/* Unit: Creates CSVs */
-		super.runCleanMFT(spark)
+		/****************************MAIN METHOD CALLS***************************/
 
-		/* Contains an Array of filenames that the user should check for tampering */
-		val prefetch: ParArray[String] = AnalyzePrefetch.analyze(prefetchDirectory, safePrefetchList)
+		/* Generate an Array of filenames that the user should check for tampering */
+		val analyzePrefResult: ParArray[String] = AnalyzePrefetch.analyze(prefetchDirectory, safePrefetchList)
 
-	/** Run Integrity Check */
+		/* Clean up MFT csv with CleanMFT.scala*/
+		val cleanedMFT = new CleanMFT()
+		cleanedMFT.runCleanMFT(spark)
 
-	/** Check Prefetch Files */
+		/* IntegrityCheck.scala depends on the user's OS */
 
-	/** Clean MFT Table */
+		/**
+	  	* Analyze MFT - NEEDS IT'S OWN CLASS
+	  	*/
 
-	/** Analyze MFT */
+		/*
+		 * AnalyzeIntegrity - NEEDS IT'S OWN CLASS
+		 */
 
-	/** Analyze Prefetch Files Directly */
+		/**
+	  	* Analyze Prefetch CSVs Directly  - NEEDS IT'S OWN CLASS
+		  */
 
-	/** Update JSON and dependent files Checksums */
+		/**
+		  * Update JSON and dependent files Checksum.
+	  	*/
+
+		/**
+			* JSON Functionality should be added to FileFun.scala
+		  */
 
   } // END run()
 

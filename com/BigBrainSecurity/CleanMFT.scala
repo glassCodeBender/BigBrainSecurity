@@ -1,7 +1,6 @@
 package com.BigBrainSecurity
 
 import java.io.IOException
-import java.sql.Timestamp
 
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
 import org.apache.spark.sql.functions._      // needed to do a lot of things (unix_timestamp)
@@ -200,8 +199,8 @@ class CleanMFT extends Setup {
 		* @throws IOException explains why certain common behaviors occurs
 		*/
 	def filterByFilename ( df: DataFrame ): DataFrame = {
-		val pattern = updateReg ( regexFile ).r  // String pattern => Regex
-		val filteredDF = df.map ( pattern.findAllIn($"Desc") )
+		val pattern = updateReg ( regexFile )  // String pattern => Regex
+		val filteredDF = df.filter( $"Desc" rlike pattern )
 
 		return filteredDF
 	} // END filterByFilename()
@@ -217,12 +216,11 @@ class CleanMFT extends Setup {
 	def filterSuspicious ( df: DataFrame ): DataFrame = {
 
 		/* matches all Strings that ran in Program Files or System32 */
-		val regexSys32 = """^.+(Program\sFiles|System32).+[.exe]$""".r
-		val regexExe = """.exe$""".r // matches all Strings that end with .exe
+		// val regexSys32 = """^.+(Program\sFiles|System32).+[.exe]$"""
 
     /* Filter the table based on the suspicious criteria. */
-		val filtDF = df.map ( regexSys32.findAllIn($"Desc") ).cache()
-		val filteredDF = filtDF.map(regexExe.findAllIn($"Desc" || $"File") )
+		val filtDF = df.filterNot( $"Desc" rlike "^.+(Program\sFiles|System32).+[.exe]$" )
+		val filteredDF = filtDF.filter( $"Desc" rlike ".exe$" )
 
 		return filteredDF
 	} // END filterSuspicious()
@@ -235,14 +233,15 @@ class CleanMFT extends Setup {
 		*/
 	def findTimestomping ( df: DataFrame ): DataFrame = {
 	  // Add Index
-	  // Filter for Born
-	  // Filter
+		/* matches all Strings that ran in Program Files or System32 */
+		val regexSys32 = "^.+(Program\sFiles|System32).+[.exe]$"
+	  /* Filter so only files that were born are included. */
+		df1 = df.filter($"MACB" === "B")
+		df2 = df1.filterNot($"Short" === "FN2")
+	  df3 = df2.filterNot($"Desc" rlike regexSys32)
+		finalDF = df3.filter($"Desc" rlike ".exe$") 
 
-	  df.filter()
-	  /* matches all Strings that ran in Program Files or System32 */
-  	val regexSys32 = """^.+(Program\sFiles|System32).+[.exe]$""".r
-	  val regexExe = """.exe$""".r // matches all Strings that end with .exe
-
+		return finalDF
 } // END findTimestomping()
 
 	/**
@@ -266,7 +265,6 @@ class CleanMFT extends Setup {
 		val dateDF = spark.sql ( SELECT *
 	                           FROM DataFrame
 	                           WHERE Date_Time >= sDate AND Date_Time =< eDate )
-
 		return dateDF
 	} // END filterByDate()
 
@@ -279,13 +277,14 @@ class CleanMFT extends Setup {
 		* @return Regex
 		*/
 	def updateReg ( fileName: String ): String = {
-		// import file - this can also be imported directly into a DataFrame
+	
+		/* import file - this can also be imported directly into a DataFrame */
 		val regArray = Source.fromFile ( fileName )
 			.getLines.toArray
 			.map ( _.trim )
 			.par
-
-		// concatenate each member of the array to make String
+	
+		/* concatenate each member of the array to make String */
 		val regexString = regArray.fold ( "" )( ( first, second ) => first + "|" + second ).par
 
 	  return regexString.mkString

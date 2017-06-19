@@ -3,11 +3,14 @@ package com.BigBrainSecurity
 import java.io.IOException
 
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
-import org.apache.spark.sql.functions._      // needed to do a lot of things (unix_timestamp)
+import org.apache.spark
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.SparkSession     // using this instead of Context
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.storage.StorageLevel // needed to change how persist() caches data.
 /* Example: df.persist(StorageLevel.MEMORY_AND_DISK) or MEMORY_ONLY */
+
+import scala.io.Source
 
 /**
 	* @author: glassCodeBender
@@ -153,7 +156,6 @@ class CleanMFT extends Setup {
 		return (startStamp, endStamp) // returns tuple with start and end timestamps
 	} // END makeTimeStamp()
 
-}
 	/**
 		* indexFilter()
 		* Filters a DataFrame based on start and ending index locations.
@@ -170,7 +172,7 @@ class CleanMFT extends Setup {
 
 		df.registerTempTable("DataFrame")
 
-		val indexDF = spark.sql ( SELECT * FROM DataFrame)
+		val indexDF = spark.sql ( "SELECT * FROM DataFrame WHERE Index > sIndex && Index < eIndex")
 
 		return indexDF
 	} // END indexFilter()
@@ -263,9 +265,9 @@ class CleanMFT extends Setup {
 		df.registerTempTable("DataFrame")
 
 	/* Filter by Query */
-		val dateDF = spark.sql ( SELECT *
-	                           FROM DataFrame
-	                           WHERE Date_Time >= sDate AND Date_Time =< eDate )
+		val dateDF = spark.sql ( "SELECT * " +
+	                           "FROM DataFrame" +
+	                           "WHERE Date_Time >= sDate AND Date_Time =< eDate")
 		return dateDF
 	} // END filterByDate()
 

@@ -63,8 +63,11 @@ class CleanMFT extends Setup {
 
 		/* Concatenate Date and Time to create timestamps. Retain columns w/ useful information. */
 		csvDF.createOrReplaceTempView("DataFrame")
-		val df = spark.sql("SELECT CONCAT(Date, Time) AS Date_Time, MACB, " +
-			"Filename, Desc, Type, Source, Short, SourceType, Inode FROM DataFrame")
+		val df = spark.sql("""
+				SELECT CONCAT(Date, Time) AS Date_Time, MACB,Filename,
+				Desc, Type, Source, Short, SourceType, Inode
+				FROM DataFrame
+		  	""" )
 
 		/**
 			* TIMESTOMPING CHECKER CALL!!!
@@ -172,7 +175,7 @@ class CleanMFT extends Setup {
 
 		df.registerTempTable("DataFrame")
 
-		val indexDF = spark.sql ( "SELECT * FROM DataFrame WHERE Index > sIndex && Index < eIndex")
+		val indexDF = spark.sql ( """SELECT * FROM DataFrame WHERE Index > sIndex && Index < eIndex""")
 
 		return indexDF
 	} // END indexFilter()
@@ -265,9 +268,8 @@ class CleanMFT extends Setup {
 		df.registerTempTable("DataFrame")
 
 	/* Filter by Query */
-		val dateDF = spark.sql ( "SELECT * " +
-	                           "FROM DataFrame" +
-	                           "WHERE Date_Time >= sDate AND Date_Time =< eDate")
+		val dateDF = spark.sql ( """SELECT * FROM DataFrame
+	                            WHERE Date_Time >= sDate AND Date_Time =< eDate""")
 		return dateDF
 	} // END filterByDate()
 

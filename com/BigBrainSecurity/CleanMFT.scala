@@ -53,7 +53,7 @@ class CleanMFT extends Setup {
 		lazy val endTime = configMap("end_time")
 		lazy val startDate = configMap("start_date")
 		lazy val endDate = configMap("end_date")
-		
+
 		/* import csv file and convert it into a DataFrame */
 		val csvDF = spark.read.format ( "com.databricks.spark.csv" )
 			.option ( "delimiter", "|" )
@@ -112,9 +112,9 @@ class CleanMFT extends Setup {
 			else
 				val finalDF = defaultFilter(theDF)
 	} // END if
-		
-		/* 
-		 * THIS PROGRAM NEEDS TO OUTPUT CSV FILES AT SOME POINT. 
+
+		/*
+		 * THIS PROGRAM NEEDS TO OUTPUT CSV FILES AT SOME POINT.
 		 */
 
 		/* Save the processed Data to a compressed file. */
@@ -185,13 +185,10 @@ class CleanMFT extends Setup {
 		* @return DataFrame
 		*/
 	def defaultFilter(df: DataFrame): DataFrame = {
-	  val regType = """Entry$|Modified$""".r
-		val updatedDF = df.map( regType.findAllIn($"Type") )
-
-	  val regexExt = """.exe$|.dll$|.rar$|.sys$|.jar$""".r
-		val defaultDF = updateDF.map( regexExt.findAllIn($"Desc"))
-
-	  return updatedDF
+		val regexExt = ".exe$|.dll$|.rar$|.sys$|.jar$|.ps1$"
+		val updatedDF = df.filter( $"Type" === "File Modified" || $"Type" === "MFT Entry" )
+		val finalDF = updatedDF.filter($"Desc" rlike regexExt)
+	  return finalDF
 } // END defaultFilter()
 
 	/**

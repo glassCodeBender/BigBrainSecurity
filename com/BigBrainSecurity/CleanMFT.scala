@@ -9,8 +9,6 @@ import org.apache.spark.sql.SparkSession     // using this instead of Context
 import org.apache.spark.storage.StorageLevel // needed to change how persist() caches data.
 /* Example: df.persist(StorageLevel.MEMORY_AND_DISK) or MEMORY_ONLY */
 
-import scala.io.Source
-
 /**
 	* @author: glassCodeBender
 	* @date: June 10, 2017
@@ -185,7 +183,9 @@ class CleanMFT extends Setup {
 		* @return DataFrame
 		*/
 	def defaultFilter(df: DataFrame): DataFrame = {
-		val regexExt = ".exe$|.dll$|.rar$|.sys$|.jar$|.ps1$"
+		val regexExt = ".exe$|.dll$|.rar$|.sys$|.jar$|.ps1$|.psd1$|" +
+									 ".psm1$|.vb$|.cs$|.vbs$|.cpp$|.cp$|.sh$"
+
 		val updatedDF = df.filter( $"Type" === "File Modified" || $"Type" === "MFT Entry" )
 		val finalDF = updatedDF.filter($"Desc" rlike regexExt)
 	  return finalDF

@@ -62,7 +62,8 @@ class CleanMFT extends Setup {
 
 		/* Concatenate Date and Time to create timestamps. Retain columns w/ useful information. */
 		csvDF.createOrReplaceTempView("DataFrame")
-		val df = spark.sql("SELECT CONCAT(Date, Time) AS Date_Time, MACB, Filename, Desc, Type, Source, Short, SourceType, Inode FROM DataFrame")
+		val df = spark.sql("SELECT CONCAT(Date, Time) AS Date_Time, MACB, " +
+			"Filename, Desc, Type, Source, Short, SourceType, Inode FROM DataFrame")
 
 		/**
 			* TIMESTOMPING CHECKER CALL!!!
@@ -239,7 +240,7 @@ class CleanMFT extends Setup {
 		df1 = df.filter($"MACB" === "B")
 		df2 = df1.filterNot($"Short" === "FN2")
 	  df3 = df2.filterNot($"Desc" rlike regexSys32)
-		finalDF = df3.filter($"Desc" rlike ".exe$") 
+		finalDF = df3.filter($"Desc" rlike ".exe$")
 
 		return finalDF
 } // END findTimestomping()
@@ -277,13 +278,13 @@ class CleanMFT extends Setup {
 		* @return Regex
 		*/
 	def updateReg ( fileName: String ): String = {
-	
+
 		/* import file - this can also be imported directly into a DataFrame */
 		val regArray = Source.fromFile ( fileName )
 			.getLines.toArray
 			.map ( _.trim )
 			.par
-	
+
 		/* concatenate each member of the array to make String */
 		val regexString = regArray.fold ( "" )( ( first, second ) => first + "|" + second ).par
 

@@ -23,7 +23,7 @@ import scala.io.Source
 	*          environments with Apache Spark.
 	*/
 
-trait CleanMFT extends Setup{
+class CleanMFT extends Setup {
 
 	/**
 		* runCleanMFT()
@@ -47,18 +47,18 @@ trait CleanMFT extends Setup{
 		val defaultFilter: Boolean = configMap("default_filter").toBoolean
 
 		/* Locations to filter by */
-		val startIndex = configMap("start_index")
-		val endIndex = configMap("end_index")
-		val startTime = configMap("start_time")
-		val endTime = configMap("end_time")
-		val startDate = configMap("start_date")
-		val endDate = configMap("end_date")
+		lazy val startIndex = configMap("start_index")
+		lazy val endIndex = configMap("end_index")
+		lazy val startTime = configMap("start_time")
+		lazy val endTime = configMap("end_time")
+		lazy val startDate = configMap("start_date")
+		lazy val endDate = configMap("end_date")
 
 		// No concatenation to create timestamps.
 		/* import csv file and convert it into a DataFrame */
 		val df = spark.read.format ( "com.databricks.spark.csv" )
 			.option ( "delimiter", "|" )
-			.option ( "header" = true )
+			.option ( "header", true )
 			.option ( "inferSchema", true )
 			.load ( importFile ).cache ( )
 

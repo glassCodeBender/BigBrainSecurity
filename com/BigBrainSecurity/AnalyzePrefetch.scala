@@ -11,6 +11,9 @@ import scala.collection.parallel.mutable.ParArray
 	* Note: This program only works for Windows 7 and earlier. I'm not sure which
 	* version of Windows Server this goes up to.
 	*
+	* Other note: This class should almost exclusively use collections made up of
+	* String objects.
+	*
 	* Program Purpose: This program looks at a directory full of prefetch files and locates
 	* inconsistencies.
 	*
@@ -18,15 +21,16 @@ import scala.collection.parallel.mutable.ParArray
 	* http://www.hexacorn.com/blog/2012/06/13/prefetch-hash-calculator-a-hash-lookup-table-xpvistaw7w2k3w2k8/
 	*/
 
-object AnalyzePrefetch extends FileFun with Setup {
+object AnalyzePrefetch extends FileFun {
 
 	/**
-		* MAIN METHOD
-		* @params prefetchDir: String - Stores the directory that contains the prefetchfiles.
+		* analyze()
+		* Functional MAIN Method
+		* @param prefetchDir: String - Stores the directory that contains the prefetchfiles.
 		*         lookupFile: String - Stores the full qualified domain name connected to the
 	  *         text file with the huge list of possible file names (from hexacorn.com).
-	  * @return Unit : prints to console.
-		* */
+	  * @return ParArray[String] : Also prints to console.
+		*/
 
 	def analyze(prefetchDir: String, // Stores the directory that contains the prefetch files.
 	            lookupFile: String): ParArray[String] = { // Stores the file with the huge list of possible file names.

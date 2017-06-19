@@ -53,16 +53,21 @@ class CleanMFT extends Setup {
 		lazy val endTime = configMap("end_time")
 		lazy val startDate = configMap("start_date")
 		lazy val endDate = configMap("end_date")
-
-		// No concatenation to create timestamps.
+		
 		/* import csv file and convert it into a DataFrame */
-		val df = spark.read.format ( "com.databricks.spark.csv" )
+		val csvDF = spark.read.format ( "com.databricks.spark.csv" )
 			.option ( "delimiter", "|" )
 			.option ( "header", true )
 			.option ( "inferSchema", true )
-			.load ( importFile ).cache ( )
+			.load ( importFile )
 
-		/* TIMESTOMP FILTER */
+		/* Concatenate Date and Time to create timestamps. Retain columns w/ useful information. */
+		csvDF.createOrReplaceTempView("DataFrame")
+		val df = spark.sql("SELECT CONCAT(Date, Time) AS Date_Time, MACB, Filename, Desc, Type, Source, Short, SourceType, Inode FROM DataFrame")
+
+		/**
+			* TIMESTOMPING CHECKER CALL!!!
+			*/
 
 		/* Filter DataFrame by index location */
 		if ( startIndex != None || endIndex != None )
@@ -107,6 +112,10 @@ class CleanMFT extends Setup {
 			else
 				val finalDF = defaultFilter(theDF)
 	} // END if
+		
+		/* 
+		 * THIS PROGRAM NEEDS TO OUTPUT CSV FILES AT SOME POINT. 
+		 */
 
 		/* Save the processed Data to a compressed file. */
 		if (finalDF.isEmpty) {
@@ -115,10 +124,6 @@ class CleanMFT extends Setup {
 			System.exit(0)
 		} // END finalDF.isEmpty
 		finalDF.saveAsSequenceFile("Users/lupefiascoisthebestrapper/Documents/MFT")
-
-
-		// if option to filter by index is true where do we get the index locations?
-		// probably a method.
 
 	} // END runCleanMFT()
 	/********************************END OF THE DRIVER PROGRAM *********************************/
@@ -161,8 +166,8 @@ class CleanMFT extends Setup {
 		* @return DataFrame
 		*/
 	def indexFilter ( df: DataFrame, // Accepts a DataFrame.
-	                  sIndex: Int, // Integer value that represents starting index.
-	                  eIndex: Int // Integer value that represents the end index.
+	                  sIndex: Int,   // Integer value that represents starting index.
+	                  eIndex: Int    // Integer value that represents the end index.
 	                ): DataFrame = {
 
 		df.registerTempTable("DataFrame")
@@ -170,8 +175,6 @@ class CleanMFT extends Setup {
 		val indexDF = spark.sql ( SELECT * FROM DataFrame)
 
 		return indexDF
-		// DO SQL
-
 	} // END indexFilter()
 
 	/**
@@ -265,7 +268,7 @@ class CleanMFT extends Setup {
 	/* Filter by Query */
 		val dateDF = spark.sql ( SELECT *
 	                           FROM DataFrame
-	                           WHERE $Date_Time >= sDate AND $Date_Time =< eDate )
+	                           WHERE Date_Time >= sDate AND Date_Time =< eDate )
 
 		return dateDF
 	} // END filterByDate()

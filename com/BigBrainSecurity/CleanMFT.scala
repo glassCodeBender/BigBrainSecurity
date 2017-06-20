@@ -44,7 +44,7 @@ class CleanMFT extends Setup {
 		/* Take config.txt input and place values in variables.  */
 		val filterIndex: Boolean =  configMap("create_integer_index").toBoolean
 		val suspicious: Boolean = configMap("filter_suspicious").toBoolean
-		val defaultFilter: Boolean = configMap("default_filter").toBoolean
+		val defFilter: Boolean = configMap("default_filter").toBoolean
 
 		/* Locations to filter by */
 		lazy val startIndex = configMap("start_index")
@@ -64,8 +64,8 @@ class CleanMFT extends Setup {
 		/* Concatenate Date and Time to create timestamps. Retain columns w/ useful information. */
 		csvDF.createOrReplaceTempView("DataFrame")
 		val df = spark.sql("""
-				SELECT CONCAT(Date, Time) AS Date_Time, MACB,Filename,
-				Desc, Type, Source, Short, SourceType, Inode
+				SELECT CONCAT(Date, Time) AS Date_Time, MACB, Filename,
+				Desc, Type, Source, Short, SourceType, Inode, Timezone, User
 				FROM DataFrame
 		  	""" )
 
@@ -75,22 +75,24 @@ class CleanMFT extends Setup {
 
 		/* Filter DataFrame by index location */
 		if ( startIndex != None || endIndex != None )
-		val indexDF = indexFilter ( df, startIndex, endIndex )
+		val indexDF = indexFilter( df, startIndex, endIndex )
 
 		/* Filter DataFrame to only include EXEs outside System32 or Program Files */
-		if ( suspicious == true )
-			val suspiciousDF = filterSuspicious (
-				if ( indexDF != None ) filterSuspicious ( indexDF )
-				else filterSuspicious ( df ) )
+		if ( suspicious == true ) {
+			val suspiciousDF = {
+				if ( indexDF != None ) filterSuspicious( indexDF )
+				else filterSuspicious( df )
+			} // END val suspiciousDF
+		} // END if (suspicious)
 
 		/* Filter DataFrame by list of Strings (Regex) */
 		if ( !regexFile.isEmpty ) {
 			val regDF = {
-				if ( suspiciousDF != None ) filterByFilename ( suspiciousDF )
+				if ( suspiciousDF != None ) filterByFilename( suspiciousDF )
 				else if ( indexDF != None ) indexDF
 				else df
-			}
-		} // END if regexFile
+			} // END val regDF
+		} // END if(regexFile)
 
 		/* Stores the current state of the DataFrame */
 		val theDF: DataFrame = {
@@ -103,18 +105,16 @@ class CleanMFT extends Setup {
 		/* Take user input and convert it into a timestamp(s) */
 		if ( startDate != None || endDate != None || startTime != None || endTime != None ) {
 
-			/*Create Start and Stop Timestamps for filtering */
-			val timeStamp = makeTimeStamp ( startDate.mkString, endDate.mkString, startTime.mkString, endTime.mkString )
+			/* Create Start and Stop Timestamps for filtering */
+			val (startStamp, endStamp) = makeTimeStamp( startDate.mkString, endDate.mkString, startTime.mkString, endTime.mkString )
       /* generate current state of DataFrame when filtering by timestamp. */
-			val dateDF = filterByDate ( theDF, timeStamp._1, timeStamp._2 )
+			val dateDF = filterByDate( theDF, startStamp, endStamp )
 		} // END if statement filter by date
 
 	  /* Filter DataFrame with default filter */
-	  if (defaultFilter) {
-			if(dateDF != None)
-				val finalDf = defaultFilter(dateDF)
-			else
-				val finalDF = defaultFilter(theDF)
+	  if (defFilter) {
+			if(dateDF != None) val finalDf = defaultFilter(dateDF)
+			else val finalDF = defaultFilter(theDF)
 	} // END if
 
 		/*
@@ -123,11 +123,11 @@ class CleanMFT extends Setup {
 
 		/* Save the processed Data to a compressed file. */
 		if (finalDF.isEmpty) {
-			if (dateDF != None) dateDF.saveAsSequenceFile ("Users/lupefiascoisthebestrapper/Documents/MFT")
-			else theDF.saveAsSequenceFile ("Users/lupefiascoisthebestrapper/Documents/MFT")
+			if (dateDF != None) dateDF.saveAsSequenceFile(allCSVDir)
+			else theDF.saveAsSequenceFile(allCSVDir)
 			System.exit(0)
 		} // END finalDF.isEmpty
-		finalDF.saveAsSequenceFile("Users/lupefiascoisthebestrapper/Documents/MFT")
+		finalDF.saveAsSequenceFile(allCSVDir)
 
 	} // END runCleanMFT()
 	/********************************END OF THE DRIVER PROGRAM *********************************/
@@ -175,7 +175,8 @@ class CleanMFT extends Setup {
 
 		df.registerTempTable("DataFrame")
 
-		val indexDF = spark.sql ( """SELECT * FROM DataFrame WHERE Index > sIndex && Index < eIndex""")
+		val indexDF = spark.sql (
+			"""SELECT * FROM DataFrame WHERE Index > sIndex && Index < eIndex""")
 
 		return indexDF
 	} // END indexFilter()
@@ -242,10 +243,10 @@ class CleanMFT extends Setup {
 		/* matches all Strings that ran in Program Files or System32 */
 		val regexSys32 = "^.+(Program\sFiles|System32).+[.exe]$"
 	  /* Filter so only files that were born are included. */
-		df1 = df.filter($"MACB" === "B")
-		df2 = df1.filterNot($"Short" === "FN2")
-	  df3 = df2.filterNot($"Desc" rlike regexSys32)
-		finalDF = df3.filter($"Desc" rlike ".exe$")
+		val df1 = df.filter($"MACB" === "B")
+		val df2 = df1.filterNot($"Short" === "FN2")
+	  val df3 = df2.filterNot($"Desc" rlike regexSys32)
+		val finalDF = df3.filter($"Desc" rlike ".exe$")
 
 		return finalDF
 } // END findTimestomping()
@@ -268,8 +269,10 @@ class CleanMFT extends Setup {
 		df.registerTempTable("DataFrame")
 
 	/* Filter by Query */
-		val dateDF = spark.sql ( """SELECT * FROM DataFrame
-	                            WHERE Date_Time >= sDate AND Date_Time =< eDate""")
+		val dateDF = spark.sql ( """
+														SELECT * FROM DataFrame
+														WHERE Date_Time >= sDate AND Date_Time =< eDate
+		                         """)
 		return dateDF
 	} // END filterByDate()
 

@@ -35,7 +35,7 @@ class BigBrainSecurity with Setup {
 	def main(args: Array[String]): Unit = run() // END main()
 
 	/*************************FUNCTIONAL MAIN METHOD**************************/
-	def run(): Unit = {
+	private def run(): Unit = {
 
 		/***********************VARIABLE DECLARATIONS***************************/
 		/* Create map of values from config file. */
@@ -63,7 +63,7 @@ class BigBrainSecurity with Setup {
 		/****************************MAIN METHOD CALLS***************************/
 
 		/* Generate an Array of filenames that the user should check for tampering */
-		val analyzePrefResult: ParArray[String] = AnalyzePrefetch.analyze(prefetchDirectory, safePrefetchList)
+		private val analyzePrefResult: ParArray[String] = AnalyzePrefetch.analyze(prefetchDirectory, safePrefetchList)
 
 		/* Clean up MFT csv with CleanMFT.scala*/
 		val cleanedMFT = new CleanMFT()

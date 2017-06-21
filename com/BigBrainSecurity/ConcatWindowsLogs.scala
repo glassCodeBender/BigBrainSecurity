@@ -27,7 +27,7 @@ class ConcatWindowsLogs extends FileFun {
 		* @param dirName Directory location of log CSVs
 		* @return DataFrame made up of all CSV logs
 		*/
-	def concatDF(dirName: String)= {
+	def concatDF(dirName: String) = {
 
 		/* Create an array of event log CSV files. */
 		val logCSVs = super.getFileArray ( dirName )
@@ -76,9 +76,10 @@ class ConcatWindowsLogs extends FileFun {
 				loop(updateDF, logList.tail)
 			} // END if/else
 		} // END loop()
-		
+
 		loop(baseDF, logList.tail)
 	} // END concatDF()
+
 	/**
 		* addMessageHeader()
 		* Description: Add "Message" column header to standard log output.

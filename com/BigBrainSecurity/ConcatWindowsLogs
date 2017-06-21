@@ -32,7 +32,7 @@ class ConcatWindowsLogs extends FileFun {
 		/* Create an array of event log CSV files. */
 		val logCSVs = super.getFileArray ( dirName )
 		/* Take every log file and turn it into a single DataFrame */
-		val fullDF = concatDF(logSchema, logCSVs: _*)
+		val fullDF = concatDF(logCSVs: _*)
 
 		return fullDF
 	} // END concatDF()
@@ -64,8 +64,7 @@ class ConcatWindowsLogs extends FileFun {
 			/* Create a DataFrame for the csv we want to join */
 			val loopDF = spark.read.format ( "com.databricks.spark.csv" )
 				.option ( "header", "true" )
-				.option ( "mode", "DROPMALFORMED" )
-				.schema ( schema )
+				.option ( "inferSchema", "true")
 				.load ( updateCSV )
 
 			/* This is the DataFrame we want to join w/ original on "Project" */
@@ -77,6 +76,7 @@ class ConcatWindowsLogs extends FileFun {
 				loop(updateDF, logList.tail)
 			} // END if/else
 		} // END loop()
+		
 		loop(baseDF, logList.tail)
 	} // END concatDF()
 	/**

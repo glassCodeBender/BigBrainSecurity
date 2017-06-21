@@ -35,7 +35,7 @@ class ConcatNCACLogs extends FileFun {
 		* @param dirName Directory location of log CSVs
 		* @return DataFrame made up of all CSV logs
 		*/
-	def concatDF(dirName: String)= {
+	def concatDF(dirName: String) = {
 
 		val logSchema = new StructType ( Array ( StructField ( "Message", StringType, true ),
 			StructField ( "Id", StringType, true ),
@@ -121,6 +121,8 @@ class ConcatNCACLogs extends FileFun {
 
 			/* This is the DataFrame we want to join w/ original on "Project" */
 			val rightDF = loopDF.withColumn("Project", lit("BBS"))
+
+			// need to filter each log to remove innocuous entries before join.
 
 			if (logArray.isEmpty) accDF
 			else {

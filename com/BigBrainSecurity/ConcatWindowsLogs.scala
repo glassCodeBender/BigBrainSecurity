@@ -70,6 +70,8 @@ class ConcatWindowsLogs extends FileFun {
 			/* This is the DataFrame we want to join w/ original on "Project" */
 			val rightDF = loopDF.withColumn("Project", lit("BBS"))
 
+			// need to filter each log to remove innocuous entries before join.
+
 			if (logList.isEmpty) accDF
 			else {
 				val updateDF = accDF join(rightDF, accDF("Project") === nextDF("Project") )

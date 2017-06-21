@@ -11,6 +11,9 @@ import org.apache.spark.sql.types.{StructType, StructField, StringType, IntegerT
 	*      Description: Program reads a list of csv log files from a directory and
 	*      combines the files into a single file so that they can be processed
 	*      as a single table.
+	*      
+	*      This program is a part of Big Brain Security. A digital forensics 
+	*      automation program and intrusion detection system.
 	*/
 class ConcatLogs extends FileFun {
 
@@ -63,12 +66,12 @@ class ConcatLogs extends FileFun {
 		* Create a method that accepts a variable number of args from Array format.
 		* The method will then loop through the arguments and create new DataFrames
 		* and then join them w/ the other DataFrames to create one large DF.
-		* 
+		*
 		* Must include way of generating new variable names for each DF unless we
-		* recursively loop through the log files and join the previous DF to the 
+		* recursively loop through the log files and join the previous DF to the
 		* main DF.
 		*/
-	
+
 	/** For most analysis we can use groupBy($"LogName") */
-	
-} // END ConcatLogs class 
+
+} // END ConcatLogs class

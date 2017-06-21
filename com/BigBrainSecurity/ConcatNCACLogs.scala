@@ -7,32 +7,36 @@ import scala.annotation.tailrec
 import org.apache.spark.sql
 import org.apache.spark.sql.functions.lit // used for creating columns
 
+// Needed to create a custom schema for program.
+import org.apache.spark.sql.types.{ StructType, StructField, StringType, IntegerType }
+
 /**
 	* @author J. Alexander
 	* @version 1.0
 	* @date 2017-6-20
 	*
+	*      NOTE: This program was written to interact w/ log files output by a
+	*      popular forensics program. The CSV files I wrote the schema for were
+	*      given to me for a forensics competition.
+	*
 	*      Description: Program reads a list of csv log files from a directory and
 	*      combines the files into a single file so that they can be processed
 	*      as a single table.
 	*
-	*      This program is a part of Big Brain Security. A digital forensics
+	*      This program is a part of Big Brain Security, a digital forensics
 	*      automation program and intrusion detection system.
 	*/
 
-class ConcatLogs extends FileFun {
-
-	// Needed to create a custom schema for program.
-	import org.apache.spark.sql.types.{ StructType, StructField, StringType, IntegerType }
+class ConcatNCACLogs extends FileFun {
 
 	/**
 		* concatDF()
 		* Description: Does all the work
 		* @param dirName Directory location of log CSVs
-		* @return DataFrame made up of all CSV logs 
+		* @return DataFrame made up of all CSV logs
 		*/
 	def concatDF(dirName: String)= {
-			
+
 		val logSchema = new StructType ( Array ( StructField ( "Message", StringType, true ),
 			StructField ( "Id", StringType, true ),
 			StructField ( "Version", StringType, true ),
@@ -60,28 +64,28 @@ class ConcatLogs extends FileFun {
 			StructField ( "TaskDisplayName", StringType, true ),
 			StructField ( "KeywordsDisplayNames", StringType, true ),
 			StructField ( "Properties", StringType, true ) ) )
-	
-		/* 
+
+		/*
 		val appDF = spark.read.format ( "com.databricks.spark.csv" )
 			.option ( "header", "true" )
 			.option ( "mode", "DROPMALFORMED" )
 			.schema ( logSchema )
 			.load ( "/FileStore/tables/o9j9x9su1498013687588/Application.csv" )
-	
+
 		val sysDF = spark.read.format ( "com.databricks.spark.csv" )
 			.option ( "header", "true" )
 			.option ( "mode", "DROPMALFORMED" )
 			.schema ( logSchema )
 			.load ( "/FileStore/tables/o9j9x9su1498013687588/System.csv" )
 		*/
-	
+
 		/* Create an array of event log CSV files. */
 		val logCSVs = super.getFileArray ( dirName )
 		/* Take every log file and turn it into a single DataFrame */
 		val fullDF = concatDF(logSchema, logCSVs: _*)
-		
+
 		return fullDF
-} // END concatDF() 
+} // END concatDF()
 
 	/**
 		* concatDF()
@@ -126,7 +130,7 @@ class ConcatLogs extends FileFun {
 		} // END loop()
 		loop(baseDF, logArray.tail)
 	} // END concatDF()
-	
+
 	/** For most analysis we can use groupBy($"LogName") */
 
 } // END ConcatLogs class

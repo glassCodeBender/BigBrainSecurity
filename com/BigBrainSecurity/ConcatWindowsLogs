@@ -29,27 +29,6 @@ class ConcatWindowsLogs extends FileFun {
 		*/
 	def concatDF(dirName: String)= {
 
-		val logSchema = new StructType ( Array ( StructField ( "Level", StringType, true ),
-			StructField ( "Source", StringType, true ),
-			StructField ( "Date and Time", StringType, true ),
-			StructField ( "Event ID", StringType, true ),
-			StructField ( "Task Category", StringType, true ),
-			StructField ( "Message", StringType, true ) ) )
-
-		/*
-		val appDF = spark.read.format ( "com.databricks.spark.csv" )
-			.option ( "header", "true" )
-			.option ( "mode", "DROPMALFORMED" )
-			.schema ( logSchema )
-			.load ( "/FileStore/tables/o9j9x9su1498013687588/Application.csv" )
-
-		val sysDF = spark.read.format ( "com.databricks.spark.csv" )
-			.option ( "header", "true" )
-			.option ( "mode", "DROPMALFORMED" )
-			.schema ( logSchema )
-			.load ( "/FileStore/tables/o9j9x9su1498013687588/System.csv" )
-		*/
-
 		/* Create an array of event log CSV files. */
 		val logCSVs = super.getFileArray ( dirName )
 		/* Take every log file and turn it into a single DataFrame */
@@ -61,12 +40,11 @@ class ConcatWindowsLogs extends FileFun {
 	/**
 		* concatDF()
 		* Creates a single DataFrame by reading in all files in a directory.
-		* @param schema StructType Used to make sure all CSVs have same schema.
 		* @param logs accepts Array of Strings
 		* @example concatDF(logCSVs: _*)
 		* @return
 		*/
-	def concatDF(schema: StructType, logs: String*): DataFrame = {
+	def concatDF(logs: String*): DataFrame = {
 
 		/* convert from sequence to array. */
 		val logList = logs.toList

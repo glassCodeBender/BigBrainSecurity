@@ -4,17 +4,17 @@ import scala.io.Source
 import scala.collection.parallel.mutable.ParArray
 
 /**
-	* @Author: glassCodeBender
+	* @Author: J. Alexander
 	* @Date 6/6/2017
 	* @Version 1.0
 	*
-	* Note: This program only works for Windows 7 and earlier. I'm not sure which
+	* IMPORTANT NOTE: This program only works for Windows 7 and earlier. I'm not sure which
 	* version of Windows Server this goes up to.
 	*
 	* Program Purpose: This program looks at a directory full of prefetch files and locates
 	* inconsistencies.
 	*
-	* IMPORTANT NOTE: The list of safe prefetch filenames was obtained here:
+	* NOTE: The list of safe prefetch filenames was obtained here:
 	* http://www.hexacorn.com/blog/2012/06/13/prefetch-hash-calculator-a-hash-lookup-table-xpvistaw7w2k3w2k8/
 	*/
 
@@ -34,7 +34,8 @@ object AnalyzePrefetch extends FileFun {
 
 		val prefetchDirectory = prefetchDir  // stores prefetch directory location
 
-		/** Generate an Array made up of legitimate prefetch filenames. */
+		/** Generate an Array made up of legitimate prefetch filenames.
+			* An array is used because arrays are good for parallel processing. */
 		val reg = """[A-Z0-9]+.\w[-A-Z0-9]+.pf""".r
 		val safePrefetchArray = {
 			Source.fromFile(lookupFile)
@@ -63,7 +64,7 @@ object AnalyzePrefetch extends FileFun {
 		// Use the scaryFiles Array to determine which csv files need to be queried and appended to one another
 		// for further assessment.
 
-		/* The program prints findings to a console. */
+		/* For solo use, the program prints results to a console. */
 		println("Go to the prefetch directory and examine the following prefetch files:")
 		println()
 		scaryFiles.foreach(println)

@@ -1,7 +1,7 @@
 package com.BigBrainSecurity
 
 /**
-  * (@)Author: glassCodeBender
+  * (@)Author: J. Alexander
   * (#)Version: 1.0
   * (#)Date: 6/11/2017
 	*
@@ -15,12 +15,10 @@ import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.functions._
 import org.apache.spark.storage.StorageLevel
-
-import scala.collection.parallel.mutable.ParArray
-/* Example: df.persist(StorageLevel.MEMORY_AND_DISK) */
+import org.apache.spark.sql.SparkSession
 
 import scala.io.Source
-import org.apache.spark.sql.SparkSession
+import scala.collection.parallel.mutable.ParArray
 
 import com.BigBrainSecurity.{AnalyzePrefetch, CleanMFT, IntegrityCheck}
 
@@ -42,7 +40,7 @@ class BigBrainSecurity with Setup {
 		val configMap = super.getConfig()
 
 		/* Find file locations from config.txt */
-		val mftTaable = configMap("mft_csv_location")
+		val mftTable = configMap("mft_csv_location")
 		val regexTxtFile = configMap("text_file_with_values_to_include_in_output")
 		val prefetchDirectory = configMap("prefetch_csv_directory_location")
 		val outputCSVName = configMap("filtered_csv_output_location")
@@ -92,5 +90,8 @@ class BigBrainSecurity with Setup {
 		  */
 
   } // END run()
+
+
+
 
 } // END BigBrainSecurity class

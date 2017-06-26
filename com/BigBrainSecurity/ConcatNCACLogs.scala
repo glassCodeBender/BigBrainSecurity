@@ -1,14 +1,12 @@
 package com.BigBrainSecurity
 
+import scala.annotation.tailrec
+
 // Needed to create a custom schema for program.
 import org.apache.spark.sql.types.{ IntegerType, StringType, StructField, StructType }
 
-import scala.annotation.tailrec
 import org.apache.spark.sql
 import org.apache.spark.sql.functions.lit // used for creating columns
-
-// Needed to create a custom schema for program.
-import org.apache.spark.sql.types.{ StructType, StructField, StringType, IntegerType }
 
 /**
 	* @author J. Alexander
@@ -122,7 +120,7 @@ class ConcatNCACLogs extends FileFun {
 			/* This is the DataFrame we want to join w/ original on "Project" */
 			val rightDF = loopDF.withColumn("Project", lit("BBS"))
 
-			// need to filter each log to remove innocuous entries before join.
+			// need to filter rightDF to remove innocuous entries before join.
 
 			if (logArray.isEmpty) accDF
 			else {

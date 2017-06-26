@@ -6,8 +6,6 @@ import scala.io.Source
 import org.apache.spark.sql
 import org.apache.spark.sql.functions.lit // used for creating columns
 
-
-
 /**
 	* @author J. Alexander
 	* @version 1.0

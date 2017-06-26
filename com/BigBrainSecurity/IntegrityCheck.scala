@@ -1,19 +1,19 @@
 package com.BigBrainSecurity
 
 /**
-	* (@)Author: glassCodeBender
+	* (@)Author: J. Alexander
 	* (#)Version: 1.0
 	* (#)Date: 5/8/2017
 	*
-	* PROGRAM PURPOSE: Test critical files and see if changes have been made.
+	* PROGRAM PURPOSE: To test critical files and see if changes have been made.
 	*/
 
 import com.twitter.hashing.KeyHasher
+
 import java.nio.file.{Files, Paths}
 import java.security.MessageDigest
 
 import scala.collection.immutable.{HashMap, TreeMap}
-import scala.collection.parallel.mutable.ParArray
 import scala.math.Ordering
 
 // THIS WORKS. Only change checksum method.
@@ -58,7 +58,7 @@ object IntegrityCheck extends FileFun {
 
 		/* Export new Map and concatenate the result of Integrity Check. */
 	} // END run()
-
+		// DO NOT CHANGE!!!!
 		def getAllFiles ( directories: Array[ String ] ): Array[ String ] = {
 			def loop ( dir: Array[ String ], accArray: Array[ String ] ): Array[ String ] = {
 				if ( dir.isEmpty ) accArray
@@ -68,8 +68,9 @@ object IntegrityCheck extends FileFun {
 		} // END getAllFiles()
 
 		/** ****************************************STORE IN Hash Table *******************************************************/
-		/**
-		 * Methods to create Maps from filename Strings to their SHA-256 hash values.
+		/*
+		 * Methods to create Maps from filename Strings to their hash values.
+		 * Currently SHA-256 is used for the checksums, but the algorithm might change.
 		 */
 		def genMap ( fileSet: Seq[ String ] ): HashMap[ String, String ] = {
 			def loop ( fileSet: Seq[ String ], accMap: HashMap[ String, String ] ): HashMap[ String, String ] = {
@@ -87,7 +88,7 @@ object IntegrityCheck extends FileFun {
 			} // END loop()
 			loop ( fileSet, new TreeMap[ String, String ]( ) )
 		} // END genTreeMap()
-  
+
 		def genTreeMapTwitter ( fileSet: Seq[ String ] )( implicit ord: Ordering[ String ] ): TreeMap[ String, Long ] = {
 			def loop ( fileSet: Seq[ String ], accTreeMap: TreeMap[ String, Long ] ): TreeMap[ String, Long ] = {
 				if ( fileSet.isEmpty ) accTreeMap

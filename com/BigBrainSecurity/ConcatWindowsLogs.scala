@@ -1,10 +1,12 @@
 package com.BigBrainSecurity
 
 import scala.annotation.tailrec
+import scala.io.Source
+
 import org.apache.spark.sql
 import org.apache.spark.sql.functions.lit // used for creating columns
 
-import scala.io.Source
+
 
 /**
 	* @author J. Alexander
@@ -70,7 +72,7 @@ class ConcatWindowsLogs extends FileFun {
 			/* This is the DataFrame we want to join w/ original on "Project" */
 			val rightDF = loopDF.withColumn("Project", lit("BBS"))
 
-			// need to filter each log to remove innocuous entries before join.
+			// need to filter rightDF to remove innocuous entries before join.
 
 			if (logList.isEmpty) accDF
 			else {

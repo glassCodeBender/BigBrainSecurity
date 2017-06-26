@@ -7,13 +7,11 @@ import com.google.common.io.Files
 import scala.io.Source
 
 /**
-	* Purpose: This program will be used in other classes for
-	* common file operations
+	* Purpose: This program will be used in other classes for common file operations.
 	*/
 trait FileFun {
 	/*******Function takes a single String and writes it to a file that is generated based on the fileTreeMap***********/
-	def writeToTxtFile(txt: String, fileNm: String): Unit = {
-		val fileName: String = fileNm
+	def writeToTxtFile(txt: String, fileName: String): Unit = {
 		val file = new File( fileName )            // Create a file where we'll store hash values.
 		val bw = new BufferedWriter(new FileWriter(file))
 		bw.write(txt)
@@ -22,7 +20,9 @@ trait FileFun {
 
 	/*********************************Method reads txt file and converts it into a String*******************************/
 	def readTxtFromFile(filename: String): String = {
-		Source.fromFile(filename).getLines.mkString   // read all of the lines from the file as one String.
+		Source.fromFile(filename)
+			.getLines
+			.mkString   // read all of the lines from the file as one String.
 		// this technique does not close the file.
 	} // END readTxtFromFile()
 
@@ -30,10 +30,19 @@ trait FileFun {
 		*       Methods accept a String directory name & converts to List or Seq of Strings.      *                                                       *
 		**************************************************************************************/
   // DO NOT CHANGE!!!
-	def getDirList(directoryName: String): Array[String] = {
+	def getDirArray(directoryName: String): Array[String] = {
 		( new File(directoryName) ).listFiles.filter(_.isDirectory).map(_.getAbsolutePath)
 	}
 
+	// DO NOT CHANGE!!!
+	def getDirList(directoryName: String): List[String] = {
+		( new File(directoryName) ).listFiles.filter(_.isDirectory).map(_.getAbsolutePath).toList
+	}
+
+	// DO NOT CHANGE!!!
+	def getDirVector(directoryName: String): Array[String] = {
+		( new File(directoryName) ).listFiles.filter(_.isDirectory).map(_.getAbsolutePath).toVector
+	}
 	// I'm removing the filter so that this method will get a list of all directories and files.
 	def getFileList(dirName: String): List[String] = {
 		( new File(dirName) ).listFiles.map(_.getAbsolutePath).toList
@@ -52,10 +61,10 @@ trait FileFun {
 
   // DO NOT CHANGE!!!
 	def getAllDirs(dir: String): Array[String] = {
-		val dirList = getDirList(dir)
+		val dirList = getDirArray(dir)
 		def loop(directories: Array[String], accList: Array[String]): Array[String] = {
 			if(directories.isEmpty) accList
-			else loop(directories.tail, accList ++: getDirList(directories.head))
+			else loop(directories.tail, accList ++: getDirArray(directories.head))
 		}
 		loop(dirList, Array[String]())
 	}
@@ -83,6 +92,7 @@ trait FileFun {
 	def generateTxtFileName(str: String): String = {
 		// This filename generation technique makes it difficult to compare imported files.
 		val dateGen = new LocalDate()
+
 		return String.format("Txt%s", dateGen.toString)
 	} // END generateFileName()
 

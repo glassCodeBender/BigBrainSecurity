@@ -3,14 +3,13 @@ package com.BigBrainSecurity
 import scala.io.Source
 
 /**
-	* @author glassCodeBender
-	* @date 2017-June-10
+	* @author J. Alexander
+	* @date 2017-6-10
 	* @version 1.0
 	*
 	*          Program Purpose: A utility program used to configure the
-	*          Intrusion Detection System (IDS) setting.
-	*
-	*          This program will be used by many BigBrainSecurity classes.
+	*          Intrusion Detection System (IDS) setting. This program reads
+	*          a config file and returns a map made up of keys and values.
 	*/
 
 trait Setup {
@@ -23,13 +22,13 @@ trait Setup {
 	def getConfig(): Map[String, String] = {
 
 		/* Stores location of the config file for program*/
-		val configLoc = "Users/glassCodeBender/Documents/ConfigFileStorage/config.txt"
+		val configLoc = "Users/glassCodeBender/Documents/BigBrainSecurity/config.txt"
 
 		/* Read pre-written config file from disk */
 		val config: Array[ String ] = Source.fromFile(configLoc)
 			.getLines
 			.toArray
-			.filter( _.contains("#") )
+			.filterNot( _.contains("#") )
 
     /* compares hash value of past and current config file. Returns boolean. */
 		val integrityConfirmed: Boolean = checkConfigIntegrity(configLoc)
@@ -37,7 +36,7 @@ trait Setup {
 		val configArray: Array[String] = config.flatMap(x => x.split ( "~>" )).map(_.trim)
 
 		/* Populate Map with variables that correspond to program settings */
-		var counter: Integer = 0
+		var counter: Int = 0
 		var configMap = Map[String, String](String -> String)
 
 		while (configArray.length > counter){
@@ -51,7 +50,7 @@ trait Setup {
 	/**
 		* checkConfigIntegrity()
 		* Evaluate checksum for config file and compare it to previous checksum
-		* @param String config.txt location in filesystem.
+		* @param configLoc: String - config.txt location in filesystem.
 		* @return Boolean
 		*/
 
@@ -64,16 +63,18 @@ trait Setup {
 		// Maybe the program should ask the user if they updated the config file.
 
 		/* Stores current and previous checksums for config.txt */
-		val previousChecksum = "d3fc163cb17a50c8d2352cb39269d28c"
+		/* NEED TO FIND A WAY TO UPDATE CHECKSUM. Once value is set, it stays set. */
+		val previousChecksum = "d3fc163cb17a50c8d2352cb39269d28c" // SAMPLE: THIS IS MD5
 		val configNewChecksum = HashGenerator.generate(configLoc)
 
-		/* This doesn't help the program if there is no way to update previousChecksum.
+		/*
+		 * This doesn't help the program if there is no way to update previousChecksum.
 		 * Can we set up a password protected file and write a program to access the protected
 		 * file. Inside the protected file we can store previous checksums in JSON files.
 		 */
 
 		if (configNewChecksum.equals(previousChecksum)){
-			println("No changes were made to the config file sense the previous configuration.")
+			println("No changes were made to the config file since the previous configuration.")
 			matchBool = true
 		}
 		else{
@@ -84,10 +85,5 @@ trait Setup {
 
 		return matchBool
 	} // END checkConfigIntegrity()
-
-	/*
-	* What should be configured?
-	* Everything but file locations.
-	* */
 
 } // END Setup trait

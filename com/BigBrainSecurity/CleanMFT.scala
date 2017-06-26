@@ -13,7 +13,7 @@ import org.apache.spark.storage.StorageLevel // needed to change how persist() c
 import scala.io.Source
 
 /**
-	* @author: glassCodeBender
+	* @author: J. Alexander
 	* @date: June 10, 2017
 	* @version: 1.0
 	*
@@ -29,10 +29,10 @@ class CleanMFT extends Setup {
 		* runCleanMFT()
 		* This method does all the work.
 		* @return Unit
-		**/
+		*/
 	def runCleanMFT (spark: SparkSession): Unit = {
 
-		/* Get a map of configurations for the program from Setup.scala */
+		/** Get a map of configurations for the program from Setup.scala */
 	  val configMap = super.getConfig()
 
 		/* Find file locations from config.txt */
@@ -192,9 +192,10 @@ class CleanMFT extends Setup {
 		val regexExt = ".exe$|.dll$|.rar$|.sys$|.jar$|.ps1$|.psd1$|" +
 									 ".psm1$|.vb$|.cs$|.vbs$|.cpp$|.cp$|.sh$"
 
-		val updatedDF = df.filter( $"Type" === "File Modified" || $"Type" === "MFT Entry" )
-		val finalDF = updatedDF.filter($"Desc" rlike regexExt)
-	  return finalDF
+		val updatedDF = df.filter( $"Type" === "File Modified")
+			.filter( $"Type" === "MFT Entry" )
+			.filter($"Desc" rlike regexExt)
+	  return updatedDF
 } // END defaultFilter()
 
 	/**
@@ -226,10 +227,10 @@ class CleanMFT extends Setup {
 		// val regexSys32 = """^.+(Program\sFiles|System32).+[.exe]$"""
 
     /* Filter the table based on the suspicious criteria. */
-		val filtDF = df.filterNot( $"Desc" rlike "^.+(Program\sFiles|System32).+[.exe]$" )
-		val filteredDF = filtDF.filter( $"Desc" rlike ".exe$" )
+		val filterDF = df.filterNot( $"Desc" rlike "^.+(Program\sFiles|System32).+[.exe]$" )
+			.filter( $"Desc" rlike ".exe$" )
 
-		return filteredDF
+		return filterDF
 	} // END filterSuspicious()
 
 	/**
@@ -243,12 +244,12 @@ class CleanMFT extends Setup {
 		/* matches all Strings that ran in Program Files or System32 */
 		val regexSys32 = "^.+(Program\sFiles|System32).+[.exe]$"
 	  /* Filter so only files that were born are included. */
-		val df1 = df.filter($"MACB" === "B")
-		val df2 = df1.filterNot($"Short" === "FN2")
-	  val df3 = df2.filterNot($"Desc" rlike regexSys32)
-		val finalDF = df3.filter($"Desc" rlike ".exe$")
+		val filteredDF = df.filter($"MACB" === "B")
+			.filterNot($"Short" === "FN2")
+			.filterNot($"Desc" rlike regexSys32)
+			.filter($"Desc" rlike ".exe$")
 
-		return finalDF
+		return filteredDF
 } // END findTimestomping()
 
 	/**
@@ -288,7 +289,8 @@ class CleanMFT extends Setup {
 
 		/* import file - this can also be imported directly into a DataFrame */
 		val regArray = Source.fromFile ( fileName )
-			.getLines.toArray
+			.getLines
+			.toArray
 			.map ( _.trim )
 			.par
 

@@ -1,9 +1,11 @@
 package com.BigBrainSecurity
 
-import java.io.{BufferedWriter, File, FileWriter}
-import java.nio.file.{Paths}
+import java.io._
+import java.nio.file.Paths
 import java.time.LocalDate
+
 import com.google.common.io.Files
+
 import scala.io.Source
 
 /**
@@ -20,10 +22,11 @@ trait FileFun {
 
 	/*********************************Method reads txt file and converts it into a String*******************************/
 	def readTxtFromFile(filename: String): String = {
-		Source.fromFile(filename)
-			.getLines
-			.mkString   // read all of the lines from the file as one String.
-		// this technique does not close the file.
+			Source.fromFile(filename)
+				.getLines
+				.mkString   // read all of the lines from the file as one String.
+			// this technique does not close the file.
+
 	} // END readTxtFromFile()
 
 	/********************CONVERT DIRECTORY TO LIST OF SUB-ITEMS****************************
@@ -40,7 +43,7 @@ trait FileFun {
 	}
 
 	// DO NOT CHANGE!!!
-	def getDirVector(directoryName: String): Array[String] = {
+	def getDirVector(directoryName: String): Vector[String] = {
 		( new File(directoryName) ).listFiles.filter(_.isDirectory).map(_.getAbsolutePath).toVector
 	}
 	// I'm removing the filter so that this method will get a list of all directories and files.
@@ -50,6 +53,10 @@ trait FileFun {
   // DO NOT CHANGE!!!!
 	def getFileArray(directoryName: String): Array[String] = {
 		( new File(directoryName) ).listFiles.filter(_.isFile).map(_.getAbsolutePath)
+	}
+
+	def getFileVector(directoryName: String): Vector[String] = {
+		( new File(directoryName) ).listFiles.filter(_.isFile).map(_.getAbsolutePath).toVector
 	}
 
 	/**
@@ -68,6 +75,29 @@ trait FileFun {
 		}
 		loop(dirList, Array[String]())
 	}
+
+	// DO NOT CHANGE!!!
+	def getAllDirsList(dir: String): List[String] = {
+		val dirList = getDirList ( dir )
+
+		def loop ( directories: List[ String ], accList: List[ String ] ): List[ String ] = {
+			if ( directories.isEmpty ) accList
+			else loop ( directories.tail, accList ++: getDirList ( directories.head ) )
+		}
+
+		loop ( dirList, Array [ String ]( ) )
+	}
+
+	// DO NOT CHANGE!!!
+	def getAllDirsVector(dir: String): List[String] = {
+		val dirList = getDirVector ( dir )
+
+		def loop ( directories: Vector[ String ], accList: Vector[ String ] ): Vector[ String ] = {
+			if ( directories.isEmpty ) accList
+			else loop ( directories.tail, accList ++: getDirVector ( directories.head ) )
+		}
+		loop ( dirList, Vector[ String ]( ) )
+	}
   // DO NOT CHANGE!!!
 	def getAllFiles(directories: Seq[String]): Array[String] = {
 		def loop(dir: Seq[String], accArray: Array[String]): Array[String] = {
@@ -77,7 +107,23 @@ trait FileFun {
 		loop(directories, Array[String]())
 	} // END getFullFileList
 
-	def fullFileList(directories: Array[String]) = directories.fold(Array[String]()){ (x, y) => x ++= getFileArray(y) }
+		// DO NOT CHANGE!!!
+		def getAllFilesList(directories: Seq[String]): List[String] = {
+			def loop(dir: Seq[String], accArray: List[String]): List[String] = {
+				if (dir.isEmpty) accArray
+				else loop(dir.tail, accArray ++: getFileList(directories.head))
+			}
+			loop(directories, List[String]())
+		} // END getFullFileList
+
+	// DO NOT CHANGE!!!
+	def getAllFilesVector(directories: Seq[String]): Vector[String] = {
+		def loop(dir: Seq[String], accArray: Vector[String]): Vector[String] = {
+			if (dir.isEmpty) accArray
+			else loop(dir.tail, accArray ++: getFileVector(directories.head))
+		}
+		loop(directories, Vector[String]())
+	} // END getFullFileList
 
 	/***************GENERATE STRING TO USE FOR FILENAMES***************************
 		*   Each time a method calls one of the methods below, they should also     *

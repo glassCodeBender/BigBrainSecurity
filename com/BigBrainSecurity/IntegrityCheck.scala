@@ -62,7 +62,7 @@ object IntegrityCheck extends FileFun {
 		def getAllFiles ( directories: Array[ String ] ): Array[ String ] = {
 			def loop ( dir: Array[ String ], accArray: Array[ String ] ): Array[ String ] = {
 				if ( dir.isEmpty ) accArray
-				else loop ( dir.tail, accArray ++ super.getFileArray ( dir.head ) )
+				else loop ( dir.tail, accArray ++ super.getFileArray( dir.head ).getOrElse(Array[String]()) )
 			}
 			loop ( directories, Array [ String ]( ) )
 		} // END getAllFiles()

@@ -309,17 +309,19 @@ class CleanMFT extends Setup {
 		*/
 	def processRegFile(fileName: String): Option[ParArray[String]] = {
 		try {
-			Source.fromFile ( fileName )
+			Some(Source.fromFile ( fileName )
 				.getLines
 				.toArray
 				.map ( _.trim )
-				.par
-		} case ioe: IOException =>
-			println(ioe + s"There was a problem importing the file $fileName.")
-			None
-		case fnf: FileNotFoundException =>
-			println(fnf + s"The file you tried to $fileName import could not be found")
-			None
+				.par)
+		}catch {
+			case ioe: IOException =>
+				println ( s"There was a problem importing the file $fileName.\n" + ioe )
+				None
+			case fnf: FileNotFoundException =>
+				println ( s"The file you tried to $fileName import could not be found\n" + fnf )
+				None
+		}
 	} // END processRegFile()
 
 } // END CleanMFT.scala

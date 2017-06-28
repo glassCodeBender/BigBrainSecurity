@@ -10,6 +10,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.storage.StorageLevel // needed to change how persist() caches data.
 /* Example: df.persist(StorageLevel.MEMORY_AND_DISK) or MEMORY_ONLY */
 
+import scala.collection.parallel.mutable.ParArray
 import scala.io.Source
 
 /**
@@ -33,26 +34,26 @@ class CleanMFT extends Setup {
 	def runCleanMFT (spark: SparkSession): Unit = {
 
 		/** Get a map of configurations for the program from Setup.scala */
-	  val configMap = super.getConfig().getOrElse(Map[String, String]())
+	  val configMap = super.getConfig()
 
 		/* Find file locations from config.txt */
-		val importFile = configMap("mft_csv_location")
-		val regexFile = configMap("text_file_with_values_to_include_in_output")
-		val outputName = configMap("filtered_csv_output_location")
-		val allCSVDir = configMap("all_csv_output_destination_directory")
+		val importFile = configMap("mft_csv_location").get
+		val regexFile = configMap("text_file_with_values_to_include_in_output").get
+		val outputName = configMap("filtered_csv_output_location").get
+		val allCSVDir = configMap("all_csv_output_destination_directory").get
 
 		/* Take config.txt input and place values in variables.  */
-		val filterIndex: Boolean =  configMap("create_integer_index").toBoolean
-		val suspicious: Boolean = configMap("filter_suspicious").toBoolean
-		val defFilter: Boolean = configMap("default_filter").toBoolean
+		val filterIndex: Boolean =  configMap("create_integer_index").get.toBoolean
+		val suspicious: Boolean = configMap("filter_suspicious").get.toBoolean
+		val defFilter: Boolean = configMap("default_filter").get.toBoolean
 
 		/* Locations to filter by */
-		lazy val startIndex = configMap("start_index")
-		lazy val endIndex = configMap("end_index")
-		lazy val startTime = configMap("start_time")
-		lazy val endTime = configMap("end_time")
-		lazy val startDate = configMap("start_date")
-		lazy val endDate = configMap("end_date")
+		lazy val startIndex = configMap("start_index").get
+		lazy val endIndex = configMap("end_index").get
+		lazy val startTime = configMap("start_time").get
+		lazy val endTime = configMap("end_time").get
+		lazy val startDate = configMap("start_date").get
+		lazy val endDate = configMap("end_date").get
 
 		// Need to check and make sure that the importFile exists
 
@@ -290,16 +291,35 @@ class CleanMFT extends Setup {
 	def updateReg ( fileName: String ): String = {
 
 		/* import file - this can also be imported directly into a DataFrame */
-		val regArray = Source.fromFile ( fileName )
-				.getLines
-				.toArray
-				.map ( _.trim )
-				.par
+		val regArray = processRegFile(fileName).get
 
 		/* concatenate each member of the array to make String */
 		val regexString = regArray.fold ( "" )( ( first, second ) => first + "|" + second ).par
 
 	  return regexString.mkString
 	} // END updateReg()
+
+	/**
+		* processReg()
+		* Allows for import of a file with values to include in a regex.
+		* This method is necesssary so program will catch exceptions.
+		*
+		* @param fileName String made up of words provided by users to filter table with.
+		* @return Option[ParArray[String]] made up of values from file.
+		*/
+	def processRegFile(fileName: String): Option[ParArray[String]] = {
+		try {
+			Source.fromFile ( fileName )
+				.getLines
+				.toArray
+				.map ( _.trim )
+				.par
+		} case ioe: IOException =>
+			println(ioe + s"There was a problem importing the file $fileName.")
+			None
+		case fnf: FileNotFoundException =>
+			println(fnf + s"The file you tried to $fileName import could not be found")
+			None
+	} // END processRegFile()
 
 } // END CleanMFT.scala

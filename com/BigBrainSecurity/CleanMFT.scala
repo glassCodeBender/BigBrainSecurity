@@ -1,6 +1,6 @@
 package com.BigBrainSecurity
 
-import java.io.IOException
+import java.io.{ FileNotFoundException, IOException }
 
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
 import org.apache.spark
@@ -53,6 +53,8 @@ class CleanMFT extends Setup {
 		lazy val endTime = configMap("end_time")
 		lazy val startDate = configMap("start_date")
 		lazy val endDate = configMap("end_date")
+
+		// Need to check and make sure that the importFile exists
 
 		/* import csv file and convert it into a DataFrame */
 		val csvDF = spark.read.format ( "com.databricks.spark.csv" )
@@ -289,10 +291,10 @@ class CleanMFT extends Setup {
 
 		/* import file - this can also be imported directly into a DataFrame */
 		val regArray = Source.fromFile ( fileName )
-			.getLines
-			.toArray
-			.map ( _.trim )
-			.par
+				.getLines
+				.toArray
+				.map ( _.trim )
+				.par
 
 		/* concatenate each member of the array to make String */
 		val regexString = regArray.fold ( "" )( ( first, second ) => first + "|" + second ).par

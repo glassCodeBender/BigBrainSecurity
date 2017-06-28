@@ -18,7 +18,7 @@ import scala.collection.parallel.mutable.ParArray
 	* http://www.hexacorn.com/blog/2012/06/13/prefetch-hash-calculator-a-hash-lookup-table-xpvistaw7w2k3w2k8/
 	*/
 
-object AnalyzePrefetch extends FileFun {
+object AnalyzePrefetch extends App with FileFun {
 
 	/**
 		* analyze()
@@ -37,6 +37,23 @@ object AnalyzePrefetch extends FileFun {
 		/** Generate an Array made up of legitimate prefetch filenames.
 			* An array is used because arrays are good for parallel processing. */
 		val reg = """[A-Z0-9]+.\w[-A-Z0-9]+.pf""".r
+
+		/*
+		try {
+			val bufferedSource = Source.fromFile ( lookupFile )
+		}
+		catch{
+			case e: java.io.IOException => println("IOException")
+				case e: java.io.FileNotFoundException => println("File not found.")
+		}
+		finally{
+			bufferedSource.close
+		}
+		val safeArray = bufferedSource.getLines.toArray.map(reg.findFirstIn(_).mkString)
+			.par
+			*/
+
+		// MAKE IMPORT SEPARATE METHOD AS AN OPTION
 		val safePrefetchArray = {
 			Source.fromFile(lookupFile)
 				.getLines

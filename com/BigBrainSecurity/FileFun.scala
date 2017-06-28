@@ -159,7 +159,7 @@ trait FileFun {
 
 		def loop ( directories: List[ String ], accList: List[ String ] ): List[ String ] = {
 			if ( directories.isEmpty ) accList
-			else loop ( directories.tail, accList ++: getDirList ( directories.head ).get )
+			else loop ( directories.tail, accList ++: getDirList ( directories.head ).getOrElse( List[String]() ))
 		}
 
 		loop ( dirList, List[String]() )
@@ -171,7 +171,7 @@ trait FileFun {
 
 		def loop ( directories: Vector[ String ], accList: Vector[ String ] ): Vector[ String ] = {
 			if ( directories.isEmpty ) accList
-			else loop ( directories.tail, accList ++: getDirVector ( directories.head ).get )
+			else loop ( directories.tail, accList ++: getDirVector ( directories.head ).getOrElse( Vector[String]() ))
 		}
 		loop ( dirList, Vector[String]() )
 	}
@@ -179,7 +179,7 @@ trait FileFun {
 	def getAllFiles(directories: Seq[String]): Array[String] = {
 		def loop(dir: Seq[String], accArray: Array[String]): Array[String] = {
 			if (dir.isEmpty) accArray
-			else loop(dir.tail, accArray ++: getFileArray(directories.head).get)
+			else loop(dir.tail, accArray ++: getFileArray(directories.head).getOrElse( Array[String]() ))
 		}
 		loop(directories, Array[String]())
 	} // END getFullFileList
@@ -190,7 +190,7 @@ trait FileFun {
 		def getAllFilesList(directories: Option[Seq[String]]): List[String] = {
 			def loop(dir: Seq[String], accArray: List[String]): List[String] = {
 				if (dir.isEmpty) accArray
-				else loop(dir.tail, accArray ++: getFileList(dir.head).get)
+				else loop(dir.tail, accArray ++: getFileList(dir.head).getOrElse( List[String]() ))
 			}
 			loop(directories.getOrElse( List[String]() ), List[String]())
 		} // END getFullFileList
@@ -199,7 +199,7 @@ trait FileFun {
 	def getAllFilesVector(directories: Seq[String]): Vector[String] = {
 		def loop(dir: Seq[String], accArray: Vector[String]): Vector[String] = {
 			if (dir.isEmpty) accArray
-			else loop(dir.tail, accArray ++: getFileVector(dir.head).get)
+			else loop(dir.tail, accArray ++: getFileVector(dir.head).getOrElse( Vector[String]() ))
 		}
 		loop(directories, Vector[String]())
 	} // END getFullFileList

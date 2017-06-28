@@ -76,7 +76,7 @@ class CleanMFT extends Setup {
 		  	""" )
 
 		/**
-			* TIMESTOMPING CHECKER CALL!!!
+			* NEED TIMESTOMP CHECKER CALL!!!
 			*/
 
 		/* Filter DataFrame by index location */

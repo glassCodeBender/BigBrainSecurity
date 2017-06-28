@@ -79,7 +79,7 @@ object AnalyzePrefetch extends FileFun {
 				.toArray
 				.map ( reg.findFirstIn ( _ ).mkString )
 				.par)
-		} catch{
+		} catch {
 			case ioe: IOException =>
 				println(ioe + s"There was a problem importing the file $lookupFile")
 				None

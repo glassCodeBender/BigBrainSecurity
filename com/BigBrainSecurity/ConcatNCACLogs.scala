@@ -6,10 +6,10 @@ import scala.annotation.tailrec
 
 // Needed to create a custom schema for program.
 import org.apache.spark
-import org.apache.spark.sql.StructType
-import org.apache.spark.sql.types.{ IntegerType, StringType, StructField, StructType }
-import org.apache.spark.sql
+//import org.apache.spark.sql._
 import org.apache.spark.sql.functions.lit // used for creating columns
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.catalyst.types.{ StringType, StructField, StructType }
 
 /**
 	* @author J. Alexander
@@ -28,7 +28,7 @@ import org.apache.spark.sql.functions.lit // used for creating columns
 	*      automation program and intrusion detection system.
 	*/
 
-class ConcatNCACLogs extends FileFun {
+class ConcatNCACLogs(val spark: SparkSession) extends FileFun {
 
 	/**
 		* concatDF()

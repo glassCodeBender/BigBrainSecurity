@@ -23,15 +23,14 @@ trait FileFun {
 	def readTxtFromFile(fileName: String): Option[String] = {
 		try {
 			Some(Source.fromFile ( fileName ).getLines.mkString) // read all of the lines from the file as one String.
-		} catch{
+		} catch {
 			case ioe: IOException =>
-				println(ioe + s"There was a problem importing the file $fileName ")
+				println ( s"There was a problem importing the file $fileName.\n" + ioe )
 				None
 			case fnf: FileNotFoundException =>
-				println(fnf + s"The file you tried to $fileName import could not be found")
+				println ( s"The file you tried to $fileName import could not be found\n" + fnf )
 				None
 		}
-			// this technique does not close the file.
 
 	} // END readTxtFromFile()
 

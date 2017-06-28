@@ -20,7 +20,7 @@ import scala.collection.parallel.mutable.ParArray
 	* http://www.hexacorn.com/blog/2012/06/13/prefetch-hash-calculator-a-hash-lookup-table-xpvistaw7w2k3w2k8/
 	*/
 
-object AnalyzePrefetch extends App with FileFun {
+object AnalyzePrefetch extends FileFun {
 
 	/**
 		* analyze()
@@ -87,6 +87,6 @@ object AnalyzePrefetch extends App with FileFun {
 				println(fnf + s"The file you tried to $lookupFile import could not be found")
 				None
 			} // END try/catch
-		} // END processFile()
-	
+		} // END processPrefFile()
+
 } // END AnalyzePrefetch

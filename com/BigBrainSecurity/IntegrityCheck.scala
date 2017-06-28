@@ -30,7 +30,7 @@ object HashGenerator{
 		KeyHasher.FNV1_32.hashKey(byteArray) } // this is a test. The algorithm was not chosen yet.
 } // END HashGenerator
 
-object IntegrityCheck extends FileFun {
+object IntegrityCheck extends App with FileFun {
 
 	/** ********************************************RUN METHOD **************************************************/
 	def run ( ): Unit = {

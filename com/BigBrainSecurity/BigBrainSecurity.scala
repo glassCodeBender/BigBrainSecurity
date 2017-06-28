@@ -19,8 +19,8 @@ import org.apache.spark.sql.SparkSession
 
 import scala.io.Source
 import scala.collection.parallel.mutable.ParArray
-
 import com.BigBrainSecurity.{ AnalyzePrefetch, CleanMFT, IntegrityCheck }
+import org.apache.spark._
 
 /* Imports for web client */
 import org.apache.commons.httpclient.NameValuePair
@@ -34,11 +34,11 @@ import java.util.ArrayList
 import org.apache.http.message.BasicNameValuePair
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.google.gson.Gson
-	
+
 class BigBrainSecurity extends Setup {
 
-	val spark = SparkSession
-		.builder()
+	val spark = SparkSession.builder()
+		.master("local")
 		.appName("Big Brain Security")
 		.enableHiveSupport()
 		.getOrCreate()
@@ -105,35 +105,3 @@ class BigBrainSecurity extends Setup {
   } // END run()
 
 } // END BigBrainSecurity class
-/*
-object HttpJsonPost extends App {
-
-	/**
-		*
-		* Will probably need to use Lift-JSON library instead of GSON
-		* because classes are complex. Maybe...
-		*
-		* What do we need to send to the client for processing?
-		* Logs
-		* MFT CSV
-		*
-	  */
-
-	// create object as a JSON String
-	val bbs = BBSWeb()
-	val testAsJson = new Gson().toJson(information)
-
-	// add name value pairs to a post object
-	val post = new HttpPost("http://localhost:8080/posttest")
-	val nameValuePairs = new ArayList[NameValuePair]()
-	nameValuePairs.add(new BasicNameValuePair("JSON", testAsJson))
-	post.setEntity(new UrlEncodedFormEntity(nameValuePairs))
-
-	// send the post request
-	val client = new DefaultHttpClient
-	val response = client.execute(post)
-	println("--- HEADERS ---")
-	response.getAllHeaders.foreach(args => println(args))
-
-} // END HttpJsonPost class
-*/

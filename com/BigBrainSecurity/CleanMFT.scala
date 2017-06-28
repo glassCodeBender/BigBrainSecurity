@@ -1,9 +1,9 @@
 package com.BigBrainSecurity
 
-import java.io.{ FileNotFoundException, IOException, File }
+import java.io.{ File, FileNotFoundException, IOException }
 
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
-import org.apache.spark
+import org.apache.spark._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.SparkSession
@@ -24,14 +24,14 @@ import scala.io.Source
 	*          environments with Apache Spark.
 	*/
 
-class CleanMFT extends Setup {
+class CleanMFT(val spark: SparkSession) extends Setup {
 
 	/**
 		* runCleanMFT()
 		* This method does all the work.
 		* @return Unit
 		*/
-	def runCleanMFT (spark: SparkSession): Unit = {
+	def runCleanMFT (): Unit = {
 
 		/** Get a map of configurations for the program from Setup.scala */
 	  val configMap = super.getConfig()
@@ -69,7 +69,8 @@ class CleanMFT extends Setup {
 
 		/* Concatenate Date and Time to create timestamps. Retain columns w/ useful information. */
 		csvDF.createOrReplaceTempView("DataFrame")
-		val df = spark.sql("""
+		val df = spark.sql(
+			"""
 				SELECT CONCAT(Date, Time) AS Date_Time, MACB, Filename,
 				Desc, Type, Source, Short, SourceType, Inode, Timezone, User
 				FROM DataFrame
@@ -276,8 +277,9 @@ class CleanMFT extends Setup {
 		df.registerTempTable("DataFrame")
 
 	/* Filter by Query */
-		val dateDF = spark.sql ( """
-														SELECT * FROM DataFrame
+		val dateDF = spark.sql (
+			"""
+SELECT * FROM DataFrame
 														WHERE Date_Time >= sDate AND Date_Time =< eDate
 		                         """)
 		return dateDF
@@ -324,7 +326,7 @@ class CleanMFT extends Setup {
 			case fnf: FileNotFoundException =>
 				println ( s"The file you tried to $fileName import could not be found\n" + fnf )
 				None
-		}
+		} // END try/catch
 	} // END processRegFile()
 
 } // END CleanMFT.scala

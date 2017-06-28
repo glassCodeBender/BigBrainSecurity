@@ -43,9 +43,9 @@ class CleanMFT extends Setup {
 		val allCSVDir = configMap("all_csv_output_destination_directory").get
 
 		/* Take config.txt input and place values in variables.  */
-		val filterIndex: Boolean =  configMap("create_integer_index").get.toBoolean
-		val suspicious: Boolean = configMap("filter_suspicious").get.toBoolean
-		val defFilter: Boolean = configMap("default_filter").get.toBoolean
+		val filterIndex: Boolean =  configMap("create_integer_index").getOrElse("false").toBoolean
+		val suspicious: Boolean = configMap("filter_suspicious").getOrElse("false").toBoolean
+		val defFilter: Boolean = configMap("default_filter").getOrElse("false").toBoolean
 
 		/* Locations to filter by */
 		lazy val startIndex = configMap("start_index").get

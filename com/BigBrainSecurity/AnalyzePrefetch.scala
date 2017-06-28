@@ -1,5 +1,7 @@
 package com.BigBrainSecurity
 
+import java.io.{ FileNotFoundException, IOException }
+
 import scala.io.Source
 import scala.collection.parallel.mutable.ParArray
 
@@ -38,29 +40,9 @@ object AnalyzePrefetch extends App with FileFun {
 			* An array is used because arrays are good for parallel processing. */
 		val reg = """[A-Z0-9]+.\w[-A-Z0-9]+.pf""".r
 
-		/*
-		try {
-			val bufferedSource = Source.fromFile ( lookupFile )
-		}
-		catch{
-			case e: java.io.IOException => println("IOException")
-				case e: java.io.FileNotFoundException => println("File not found.")
-		}
-		finally{
-			bufferedSource.close
-		}
-		val safeArray = bufferedSource.getLines.toArray.map(reg.findFirstIn(_).mkString)
-			.par
-			*/
 
 		// MAKE IMPORT SEPARATE METHOD AS AN OPTION
-		val safePrefetchArray = {
-			Source.fromFile(lookupFile)
-				.getLines
-				.toArray
-				.map(reg.findFirstIn(_).mkString)
-				.par
-		}
+		val safePrefetchArray = processPrefFile(lookupFile).getOrElse(ParArray[String]())
 
 		/* Create an Array made up of common system filenames. */
 		val otherReg = """[A-Z0-9.]+""".r
@@ -88,4 +70,23 @@ object AnalyzePrefetch extends App with FileFun {
 
 		return scaryFiles
 	} // END analyze()
+
+	def processPrefFile(lookupFile: String): Option[ParArray[String]] ={
+		val reg = """[A-Z0-9]+.\w[-A-Z0-9]+.pf""".r
+		try {
+			Some(Source.fromFile ( lookupFile )
+				.getLines
+				.toArray
+				.map ( reg.findFirstIn ( _ ).mkString )
+				.par)
+		} catch{
+			case ioe: IOException =>
+				println(ioe + s"There was a problem importing the file $lookupFile")
+				None
+			case fnf: FileNotFoundException =>
+				println(fnf + s"The file you tried to $lookupFile import could not be found")
+				None
+			} // END try/catch
+		} // END processFile()
+	
 } // END AnalyzePrefetch

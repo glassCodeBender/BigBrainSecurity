@@ -1,6 +1,6 @@
 package com.BigBrainSecurity
 
-import java.io.{ FileNotFoundException, IOException }
+import java.io.{ FileNotFoundException, IOException, File }
 
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
 import org.apache.spark
@@ -58,11 +58,13 @@ class CleanMFT extends Setup {
 		// Need to check and make sure that the importFile exists
 
 		/* import csv file and convert it into a DataFrame */
-		val csvDF = spark.read.format ( "com.databricks.spark.csv" )
-			.option ( "delimiter", "|" )
-			.option ( "header", true )
-			.option ( "inferSchema", true )
-			.load ( importFile )
+		if( new File(importFile).isFile() ) {
+			val csvDF = spark.read.format ( "com.databricks.spark.csv" )
+				.option ( "delimiter", "|" )
+				.option ( "header", true )
+				.option ( "inferSchema", true )
+				.load ( importFile )
+		} else println(s"The csv file you tried to import $importFile does not exist.")
 
 		/* Concatenate Date and Time to create timestamps. Retain columns w/ useful information. */
 		csvDF.createOrReplaceTempView("DataFrame")

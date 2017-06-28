@@ -36,12 +36,7 @@ object AnalyzePrefetch extends FileFun {
 
 		val prefetchDirectory = prefetchDir  // stores prefetch directory location
 
-		/** Generate an Array made up of legitimate prefetch filenames.
-			* An array is used because arrays are good for parallel processing. */
-		val reg = """[A-Z0-9]+.\w[-A-Z0-9]+.pf""".r
-
-
-		// MAKE IMPORT SEPARATE METHOD AS AN OPTION
+		/** Generate an Array made up of legitimate prefetch filenames. */
 		val safePrefetchArray = processPrefFile(lookupFile).getOrElse(ParArray[String]())
 
 		/* Create an Array made up of common system filenames. */
@@ -70,7 +65,12 @@ object AnalyzePrefetch extends FileFun {
 
 		return scaryFiles
 	} // END analyze()
-
+	/**
+		* processPrefFile()
+		* Imports file and runs a regex over it to extract prefetch file names
+		* @param lookupFile
+		* @return
+		*/
 	def processPrefFile(lookupFile: String): Option[ParArray[String]] ={
 		val reg = """[A-Z0-9]+.\w[-A-Z0-9]+.pf""".r
 		try {

@@ -33,7 +33,7 @@ class CleanMFT extends Setup {
 	def runCleanMFT (spark: SparkSession): Unit = {
 
 		/** Get a map of configurations for the program from Setup.scala */
-	  val configMap = super.getConfig()
+	  val configMap = super.getConfig().getOrElse(Map[String, String]())
 
 		/* Find file locations from config.txt */
 		val importFile = configMap("mft_csv_location")

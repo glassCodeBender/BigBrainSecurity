@@ -1,5 +1,7 @@
 package com.BigBrainSecurity
 
+import java.io.{ FileNotFoundException, IOException }
+
 import scala.io.Source
 
 /**
@@ -19,32 +21,43 @@ trait Setup {
 		* This section of the program does most of the work.
 		* @return Map[String, String]
 		*/
-	def getConfig(): Map[String, String] = {
+	def getConfig(): Some[Map[String, String]] = {
 
 		/* Stores location of the config file for program*/
 		val configLoc = "Users/glassCodeBender/Documents/BigBrainSecurity/config.txt"
 
 		/* Read pre-written config file from disk */
-		val config: Array[ String ] = Source.fromFile(configLoc)
-			.getLines
-			.toArray
-			.filterNot( _.contains("#") )
+		val config: Option[Array[ String ]] = try {
+			Some(Source.fromFile ( configLoc )
+				.getLines
+				.toArray
+				.filterNot (_.contains ( "#" )) )
+		} 	catch{
+			case ioe: IOException =>
+				println(ioe + s"There was a problem importing the file $configLoc.")
+				None
+			case fnf: FileNotFoundException =>
+				println(fnf + s"The file you tried to $configLoc import could not be found")
+				None
+		} // END try/catch
+
+		val configData = config.getOrElse( Array[String]() )
 
     /* compares hash value of past and current config file. Returns boolean. */
 		val integrityConfirmed: Boolean = checkConfigIntegrity(configLoc)
 
-		val configArray: Array[String] = config.flatMap(x => x.split ( "~>" )).map(_.trim)
+		val configArray: Array[String] = configData.flatMap(x => x.split ( "~>" )).map(_.trim)
 
 		/* Populate Map with variables that correspond to program settings */
 		var counter: Int = 0
-		var configMap = Map[String, String](String -> String)
+		var configMap = Map[String, String]()
 
 		while (configArray.length > counter){
 				configMap += ( configArray ( counter ) -> configArray ( counter + 1 ) )
 			  counter = counter + 2
 		} // END while populate configMap
 
-		return configMap
+		return Some(configMap)
 	} // END getConfig()
 
 	/**

@@ -19,8 +19,21 @@ import org.apache.spark.sql.SparkSession
 
 import scala.io.Source
 import scala.collection.parallel.mutable.ParArray
+import com.BigBrainSecurity.{ AnalyzePrefetch, CleanMFT, IntegrityCheck }
 
-import com.BigBrainSecurity.{AnalyzePrefetch, CleanMFT, IntegrityCheck}
+	/* Imports for web client */
+import org.apache.commons.httpclient.NameValuePair
+import java.io._
+import org.apache.commons
+import org.apache.http._
+import org.apache.http.client._
+import org.apache.client.methods.HttpPost
+import org.apache.impl.client.DefaultHttpClient
+import java.util.ArrayList
+import org.apache.http.message.BasicNameValuePair
+import org.apache.http.client.entity.UrlEncodedFormEntity
+import org.google.gson.Gson
+
 
 class BigBrainSecurity with Setup {
 
@@ -90,8 +103,5 @@ class BigBrainSecurity with Setup {
 		  */
 
   } // END run()
-
-
-
 
 } // END BigBrainSecurity class

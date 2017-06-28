@@ -1,5 +1,10 @@
 package com.BigBrainSecurity
 
+import java.io.File
+
+import org.apache.spark
+import org.apache.spark.sql.StructType
+
 import scala.annotation.tailrec
 
 // Needed to create a custom schema for program.
@@ -101,11 +106,15 @@ class ConcatNCACLogs extends FileFun {
 		// Need to check and make sure that the file exists
 
 		/* take first member of array and create DataFrame */
-		val df = spark.read.format ( "com.databricks.spark.csv" )
-			.option ( "header", "true" )
-			.option ( "mode", "DROPMALFORMED" )
-			.schema ( schema )
-			.load ( logArray.head )
+		if( new File(logArray.head).isFile() ) {
+			val df = spark.read.format ( "com.databricks.spark.csv" )
+				.option ( "header", "true" )
+				.option ( "mode", "DROPMALFORMED" )
+				.schema ( schema )
+				.load ( logArray.head )
+		} else println(s"The csv file you tried to import ${logArray.head} does not exist./n " +
+			"Check the filename in config.txt and then try again")
+
 		/* Add a column to df to make it easier to join. */
 		val baseDF = df.withColumn("Project", lit("BBS"))
 
@@ -116,11 +125,14 @@ class ConcatNCACLogs extends FileFun {
 			// Should check if the file exists first
 
 			/* Create a DataFrame for the csv we want to join */
-			val loopDF = spark.read.format ( "com.databricks.spark.csv" )
-				.option ( "header", "true" )
-				.option ( "mode", "DROPMALFORMED" )
-				.schema ( schema )
-				.load ( logArray.head )
+			if( new File(logArray.head).isFile() ) {
+				val loopDF = spark.read.format ( "com.databricks.spark.csv" )
+					.option ( "header", "true" )
+					.option ( "mode", "DROPMALFORMED" )
+					.schema ( schema )
+					.load ( logArray.head )
+			} else println(s"The csv file you tried to import ${logArray.head} does not exist./n " +
+				"Check the filename in config.txt and then try again.")
 
 			/* This is the DataFrame we want to join w/ original on "Project" */
 			val rightDF = loopDF.withColumn("Project", lit("BBS"))

@@ -78,7 +78,7 @@ class ConcatNCACLogs extends FileFun {
 		*/
 
 		/* Create an array of event log CSV files. */
-		val logCSVs = super.getFileArray ( dirName )
+		val logCSVs = super.getFileArray ( dirName ).getOrElse( Array[String]() )
 		/* Take every log file and turn it into a single DataFrame */
 		val fullDF = concatDF(logSchema, logCSVs: _*)
 
@@ -98,6 +98,8 @@ class ConcatNCACLogs extends FileFun {
 		/* convert from sequence to array. */
 		val logArray = logs.toArray
 
+		// Need to check and make sure that the file exists
+
 		/* take first member of array and create DataFrame */
 		val df = spark.read.format ( "com.databricks.spark.csv" )
 			.option ( "header", "true" )
@@ -110,6 +112,9 @@ class ConcatNCACLogs extends FileFun {
 		/** Recursive helper function for concatDF */
 		@tailrec
 		def loop(accDF: DataFrame, logArray: Array[String]): DataFrame = {
+
+			// Should check if the file exists first
+
 			/* Create a DataFrame for the csv we want to join */
 			val loopDF = spark.read.format ( "com.databricks.spark.csv" )
 				.option ( "header", "true" )

@@ -64,7 +64,8 @@ class CleanMFT extends Setup {
 				.option ( "header", true )
 				.option ( "inferSchema", true )
 				.load ( importFile )
-		} else println(s"The csv file you tried to import $importFile does not exist.")
+		} else println(s"The csv file you tried to import $importFile does not exist./n " +
+		"Check the filename in config.txt and then try again.")
 
 		/* Concatenate Date and Time to create timestamps. Retain columns w/ useful information. */
 		csvDF.createOrReplaceTempView("DataFrame")

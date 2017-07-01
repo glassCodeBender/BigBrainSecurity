@@ -24,7 +24,7 @@ import scala.io.Source
 	*          environments with Apache Spark.
 	*/
 
-class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]) extends Setup {
+class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]) {
 
 	/**
 		* runCleanMFT()
@@ -131,10 +131,10 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
 			else theDF.saveAsSequenceFile(allCSVDir)
 			System.exit(0)
 		} // END finalDF.isEmpty
-		
+
 		/* export the updated DataFrame to CSV file */
 		toCSV(finalDF)
-		
+
 		/* Save transformed DataFrame as Hadoop sequence file. */
 		finalDF.saveAsSequenceFile(allCSVDir)
 
@@ -334,10 +334,10 @@ SELECT * FROM DataFrame
 				None
 		} // END try/catch
 	} // END processRegFile()
-	
+
 	def toCSV(df: DataFrame): Unit = {
 		val outputName = configMap("filtered_csv_output_location").get
-		
+
 		df.write.format("com.databricks.spark.csv").save(outputName)
 	}
 

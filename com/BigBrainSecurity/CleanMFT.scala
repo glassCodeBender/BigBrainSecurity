@@ -24,7 +24,7 @@ import scala.io.Source
 	*          environments with Apache Spark.
 	*/
 
-class CleanMFT(val spark: SparkSession) extends Setup {
+class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]) extends Setup {
 
 	/**
 		* runCleanMFT()
@@ -32,9 +32,6 @@ class CleanMFT(val spark: SparkSession) extends Setup {
 		* @return Unit
 		*/
 	def runCleanMFT (): Unit = {
-
-		/** Get a map of configurations for the program from Setup.scala */
-	  val configMap = super.getConfig()
 
 		/* Find file locations from config.txt */
 		val importFile = configMap("mft_csv_location").get
@@ -297,7 +294,7 @@ SELECT * FROM DataFrame
 
 		/* import file - this can also be imported directly into a DataFrame */
 		val regArray = processRegFile(fileName).get
-		
+
 		/* Replace blank spaces with \\s and then concatenate Strings together*/
 		val regexString = regArray.map(_.replaceAll(" ", "\\s"))
 			.fold ( "" )( ( first, second ) => first + "|" + second ).par

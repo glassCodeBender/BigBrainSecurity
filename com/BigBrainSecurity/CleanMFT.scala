@@ -236,7 +236,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
 		// val regexSys32 = """^.+(Program\sFiles|System32).+[.exe]$"""
 
     /* Filter the table based on the suspicious criteria. */
-		val filterDF = df.filterNot( $"Desc" rlike "^.+(Program\sFiles|System32).+[.exe]$" )
+		val filterDF = df.filterNot( $"Desc" rlike "^.+(Program\\sFiles|System32).+[.exe]$" )
 			.filter( $"Desc" rlike ".exe$" )
 
 		return filterDF

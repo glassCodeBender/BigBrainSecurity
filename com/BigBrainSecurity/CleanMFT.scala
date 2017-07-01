@@ -251,7 +251,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
 	def findTimestomping ( df: DataFrame ): DataFrame = {
 	  // Add Index
 		/* matches all Strings that ran in Program Files or System32 */
-		val regexSys32 = "^.+(Program\sFiles|System32).+[.exe]$"
+		val regexSys32 = "^.+(Program\\sFiles|System32).+[.exe]$"
 	  /* Filter so only files that were born are included. */
 		val filteredDF = df.filter($"MACB" === "B")
 			.filterNot($"Short" === "FN2")

@@ -22,19 +22,6 @@ import scala.collection.parallel.mutable.ParArray
 import com.BigBrainSecurity.{ AnalyzePrefetch, CleanMFT, IntegrityCheck }
 import org.apache.spark._
 
-/* Imports for web client */
-import org.apache.commons.httpclient.NameValuePair
-import java.io._
-import org.apache.commons
-import org.apache.http._
-import org.apache.http.client._
-import org.apache.client.methods.HttpPost
-import org.apache.impl.client.DefaultHttpClient
-import java.util.ArrayList
-import org.apache.http.message.BasicNameValuePair
-import org.apache.http.client.entity.UrlEncodedFormEntity
-import org.google.gson.Gson
-
 class BigBrainSecurity extends Setup {
 
 	val spark = SparkSession.builder()
@@ -55,19 +42,19 @@ class BigBrainSecurity extends Setup {
 		/* Find file locations from config.txt */
 		val prefetchDirectory = configMap("prefetch_csv_directory_location").get
 		val safePrefetchList = configMap("safe_prefetch_list").get
-		
+
 		/****************************MAIN METHOD CALLS***************************/
 
 		/* Generate an Array of filenames that the user should check for tampering */
 		private val analyzePrefResult: ParArray[String] = new AnalyzePrefetch(prefetchDirectory, safePrefetchList).analyze
 
-		
-		println("WARNING: Prefetch files from Windows 8 and 10 will give inaccurate results.\n" 
+
+		println("WARNING: Prefetch files from Windows 8 and 10 will give inaccurate results.\n"
 		+ "Only files from Windows 7 systems and earlier will give accurate results. ")
 		analyzePrefResult.foreach(println)
 
 		/* Clean up MFT csv with CleanMFT.scala*/
-		val cleanedMFT = new CleanMFT(spark)
+		val cleanedMFT = new CleanMFT(spark, configMap)
 		cleanedMFT.runCleanMFT()
 
 		/* IntegrityCheck.scala depends on the user's OS */

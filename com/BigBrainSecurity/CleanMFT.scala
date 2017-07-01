@@ -297,9 +297,13 @@ SELECT * FROM DataFrame
 
 		/* import file - this can also be imported directly into a DataFrame */
 		val regArray = processRegFile(fileName).get
+		
+		/* Replace blank spaces with \\s and then concatenate Strings together*/
+		val regexString = regArray.map(_.replaceAll(" ", "\\s"))
+			.fold ( "" )( ( first, second ) => first + "|" + second ).par
 
 		/* concatenate each member of the array to make String */
-		val regexString = regArray.fold ( "" )( ( first, second ) => first + "|" + second ).par
+	//	val regexString = regArray.fold ( "" )( ( first, second ) => first + "|" + second ).par
 
 	  return regexString.mkString
 	} // END updateReg()

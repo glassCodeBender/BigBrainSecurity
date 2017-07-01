@@ -79,7 +79,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
 
 		/* Filter DataFrame by index location */
 		if ( startIndex != None || endIndex != None )
-		val indexDF = indexFilter( df, startIndex, endIndex )
+			val indexDF = indexFilter( df, startIndex, endIndex )
 
 		/* Filter DataFrame to only include EXEs outside System32 or Program Files */
 		if ( suspicious == true ) {
@@ -131,6 +131,11 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
 			else theDF.saveAsSequenceFile(allCSVDir)
 			System.exit(0)
 		} // END finalDF.isEmpty
+		
+		/* export the updated DataFrame to CSV file */
+		toCSV(finalDF)
+		
+		/* Save transformed DataFrame as Hadoop sequence file. */
 		finalDF.saveAsSequenceFile(allCSVDir)
 
 	} // END runCleanMFT()
@@ -329,5 +334,11 @@ SELECT * FROM DataFrame
 				None
 		} // END try/catch
 	} // END processRegFile()
+	
+	def toCSV(df: DataFrame): Unit = {
+		val outputName = configMap("filtered_csv_output_location").get
+		
+		df.write.format("com.databricks.spark.csv").save(outputName)
+	}
 
 } // END CleanMFT.scala

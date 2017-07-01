@@ -6,9 +6,9 @@ import scala.io.Source
 import scala.collection.parallel.mutable.ParArray
 
 /**
-	* @Author: J. Alexander
-	* @Date 6/6/2017
-	* @Version 1.0
+	* @author: J. Alexander
+	* @date 6/6/2017
+	* @version 1.0
 	*
 	* IMPORTANT NOTE: This program only works for Windows 7 and earlier. I'm not sure which
 	* version of Windows Server this goes up to.
@@ -20,7 +20,8 @@ import scala.collection.parallel.mutable.ParArray
 	* http://www.hexacorn.com/blog/2012/06/13/prefetch-hash-calculator-a-hash-lookup-table-xpvistaw7w2k3w2k8/
 	*/
 
-object AnalyzePrefetch extends FileFun {
+class AnalyzePrefetch(val prefetchDir: String, // Stores the directory that contains the prefetch files.
+                      val lookupFile: String) extends FileFun {
 
 	/**
 		* analyze()
@@ -31,8 +32,7 @@ object AnalyzePrefetch extends FileFun {
 	  * @return ParArray[String] : Also prints to console.
 		*/
 
-	def analyze(prefetchDir: String, // Stores the directory that contains the prefetch files.
-	            lookupFile: String): ParArray[String] = { // Stores the file with the huge list of possible file names.
+	def analyze(): ParArray[String] = { // Stores the file with the huge list of possible file names.
 
 		val prefetchDirectory = prefetchDir  // stores prefetch directory location
 
@@ -72,7 +72,9 @@ object AnalyzePrefetch extends FileFun {
 		* @return
 		*/
 	def processPrefFile(lookupFile: String): Option[ParArray[String]] ={
+
 		val reg = """[A-Z0-9]+.\w[-A-Z0-9]+.pf""".r
+
 		try {
 			Some(Source.fromFile ( lookupFile )
 				.getLines

@@ -55,7 +55,7 @@ class BigBrainSecurity extends Setup {
 
 		/* Clean up MFT csv with CleanMFT.scala*/
 		val cleanedMFT = new CleanMFT(spark, configMap)
-		cleanedMFT.runCleanMFT()
+		cleanedMFT.runCleanMFT
 
 		/* IntegrityCheck.scala depends on the user's OS */
 

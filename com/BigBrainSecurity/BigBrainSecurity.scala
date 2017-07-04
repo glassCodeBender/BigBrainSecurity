@@ -4,14 +4,14 @@ package com.BigBrainSecurity
   * (@)Author: J. Alexander
   * (#)Version: 1.0
   * (#)Date: 7/3/2017
-	* 
-	* CASE CLASSES: 
+	*
+	* CASE CLASSES:
 	* Brain
 	* Findings
 	* Registration
 	* User
 	* Technical
-	* 
+	*
 	* MAIN CLASS BigBrainSecurity
 	*
   * PROGRAM PURPOSE: This is the driver program for Big Brain Security

@@ -33,10 +33,10 @@ import org.apache.spark._
 
 /**
 	* case class Brain
-	* Purpose: Contains the raw data from a single time the program run.
+	* Purpose: Contains the raw data from a single time the program runs.
 	* This is the data that is sent over from the client.
 	* Eventually the brain will communicate w/ a program that analyzes
-	* raw memory dumps.
+	* raw memory dumps also.
 	* @param id primary key
 	* @param dateTime primary key Stores current date.
 	* @param name contains user's name
@@ -90,10 +90,12 @@ case class Registration( id: Int,                               // primary key
 	* case class User
 	* Purpose: Contains information about the client
 	* @param id Primary key Integer ID
+	* @param name String name of user/organization
 	* @param address Array[String] user/organization address
 	* @param phone Int Client's
 	*/
 case class User( id: Int,                       // primary key
+                 name: String,                  // name of user/organization
                  address: Array[String],        // name of user/organization
                  phone: Int,                    // client's technical details
                  badStatus: Boolean = false     // location where user runs program from.

@@ -1,5 +1,7 @@
 # BigBrainSecurity
 
+This program is a work in progress. 
+
 Big Brain Security is a computer forensic automation program/IDS written primarily in Scala with Apache Spark. I'm 
 also using python to develop a plugin for the Volatility Framework.
 

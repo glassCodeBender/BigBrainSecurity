@@ -10,6 +10,9 @@ import scala.collection.parallel.mutable.ParArray
 	* @date 6/6/2017
 	* @version 1.0
 	*
+	*          MAIN CLASS: AnalyzePrefetch
+	*          CASE CLASS: PrefResults
+	*
 	* IMPORTANT NOTE: This program only works for Windows 7 and earlier. I'm not sure which
 	* version of Windows Server this goes up to.
 	*
@@ -20,19 +23,26 @@ import scala.collection.parallel.mutable.ParArray
 	* http://www.hexacorn.com/blog/2012/06/13/prefetch-hash-calculator-a-hash-lookup-table-xpvistaw7w2k3w2k8/
 	*/
 
-class AnalyzePrefetch(val prefetchDir: String, // Stores the directory that contains the prefetch files.
-                      val lookupFile: String) extends FileFun {
+/**
+	* case class PrefResults
+	* @param id Primary Key
+	* @param clientPrefFiles Array[String] In case of error, we want to save the pref files on client.
+	* @param scaryFiles Array[String] Stores the results of checking client's prefetch files.
+	*/
+case class PrefResults( id: Int,
+                        clientPrefFiles: List[String],
+                        scaryFiles: List[String] ){} // END case class PrefResults
+
+class AnalyzePrefetch( id: Int,
+	                     val prefetchDir: String, // Stores the directory that contains the prefetch files.
+                       val lookupFile: String ) extends FileFun {
 
 	/**
 		* analyze()
 		* Functional MAIN Method
-		* @param prefetchDir: String - Stores the directory that contains the prefetchfiles.
-		*         lookupFile: String - Stores the full qualified domain name connected to the
-	  *         text file with the huge list of possible file names (from hexacorn.com).
 	  * @return ParArray[String] : Also prints to console.
 		*/
-
-	def analyze(): ParArray[String] = { // Stores the file with the huge list of possible file names.
+	def analyze(): PrefResults = { // Stores the file with the huge list of possible file names.
 
 		val prefetchDirectory = prefetchDir  // stores prefetch directory location
 
@@ -63,7 +73,7 @@ class AnalyzePrefetch(val prefetchDir: String, // Stores the directory that cont
 		println()
 		scaryFiles.foreach(println)
 
-		return scaryFiles
+		return PrefResults(id, systemPrefetchFiles.toList, scaryFiles.toList)
 	} // END analyze()
 	/**
 		* processPrefFile()

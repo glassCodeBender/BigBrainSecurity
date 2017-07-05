@@ -13,7 +13,8 @@
 # 
 # THE FOLLOWING LINES DICTATE HOW THE PROGRAM OPERATES:
 #
-# INSTRUCTION: The only two options for the Operating System (OS) is “Mac” or “Windows”
+# INSTRUCTION: The only three options for the Operating System (OS) are “Mac”, “Windows”, or Windows10
+# Note: Choose Windows for all Windows operating systems prior to Windows 7.
 operating_system ~> Windows
 #
 # INSTRUCTION: The following “true” and “false” statements are CASE SENSITIVE:
@@ -22,7 +23,7 @@ operating_system ~> Windows
 create_integer_index ~> true
 # MFT FILTER OPTION: Filter to only include .exe, .jar, .rar, .dll, and .sys extensions.
 default_filter ~> true
-# MFT FILTER OPTION: This program is a work-in-process.
+# MFT FILTER OPTION: NOT SURE WHAT THIS DOES?
 fix_timestamp ~> true 
 #
 # MFT FILTER OPTION: Set the command below to “true” to ONLY include .exe FILES THAT RAN 
@@ -43,12 +44,19 @@ fix_timestamp ~> true
 # FILE AND DIRECTORY LOCATIONS
 # 
 # INPUT LOCATIONS
+# Location of the MFT CSV on client machine.
 mft_csv_location ~> “Users/glassCodeBender/Documents/MFTProject”
+# Location of the txt file that client wants to filter the MFT by.
 text_file_with_values_to_include_in_output ~> “Users/glassCodeBender/Documents/viruslist.txt”
-prefetch_csv_directory_location ~> “Users/glassCodeBender/Documents/PrefetchProject”
-safe_prefetch_list ~> “Users/glassCodeBender/Documents/security/prefetch_hashes_lookup.txt”
+# Location of the txt file consisting of safe prefetches (Might want to filter and then keep this in data structure in program)
+safe_prefetch_list ~> “Users/glassCodeBender/Applications/BigBrainSecurity/txt_files/prefetch_hashes_lookup.txt”
+# Directory location of Big Brain Security on the client’s computer
+BBS_directory ~> “Users/glassCodeBender/Applications/BigBrainSecurity”
 # 
 # OUTPUT LOCATIONS
+# Might need to create these directory before outputting results to them.
 filtered_csv_output_location~> “Users/glassCodeBender/Documents/MFTProject/results.csv”
 all_csv_output_destination_directory ~> “Users/glassCodeBender/Documents/Security/BigBrainOutput”
 #
+# PREFETCH FILTER OPTIONS (For taking a closer look at the scary files
+# 

@@ -1,9 +1,25 @@
 package com.BigBrainSecurity
 
+/* Spark Imports */
+import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
+import org.apache.spark.sql.functions._
+import org.apache.spark.storage.StorageLevel
+import org.apache.spark.sql.SparkSession
+import org.apache.spark._
+
+/* Scala & BBS imports */
+import scala.io.Source
+import scala.collection.parallel.mutable.ParArray
+import com.BigBrainSecurity.{ AnalyzePrefetch, CleanMFT, IntegrityCheck }
+
 /**
   * (@)Author: J. Alexander
   * (#)Version: 1.0
   * (#)Date: 7/3/2017
+	*
+	* FILE CONTENTS:
+	*
+	* MAIN CLASS: BigBrainSecurity
 	*
 	* CASE CLASSES:
 	* Brain
@@ -12,24 +28,9 @@ package com.BigBrainSecurity
 	* User
 	* Technical
 	*
-	* MAIN CLASS BigBrainSecurity
-	*
   * PROGRAM PURPOSE: This is the driver program for Big Brain Security
-	* forensics and IDS software.
-	*
-	* CONTAINS MAIN METHOD!
+	* forensics and IDS software. The Spark Session originates here.
   */
-
-/* Spark Imports */
-import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.SELECT
-import org.apache.spark.sql.functions._
-import org.apache.spark.storage.StorageLevel
-import org.apache.spark.sql.SparkSession
-
-import scala.io.Source
-import scala.collection.parallel.mutable.ParArray
-import com.BigBrainSecurity.{ AnalyzePrefetch, CleanMFT, IntegrityCheck }
-import org.apache.spark._
 
 /**
 	* case class Brain
@@ -43,14 +44,16 @@ import org.apache.spark._
 	* @param mftCSV contains the mft in csv format
 	* @param regCSV contains registry in csv format.
 	* @param prefResults Contains a newline separated list of scary files
+	* @param hashes List[String] Might not need to be included in Brain.
 	*/
 case class Brain( id: Int,                                   // primary key
                   dateTime: java.util.Date = java.util.Date, // primary key
                   name: String,                              // contains user's name
                   mftCSV: String,                            // contains the mft in csv format
                   regCSV: String,                            // contains registry in csv format.
-                  prefResults: String                        // contains any extra information.
-                ){}
+                  prefResults: String,                       // contains any extra information
+                  hashes: List[String]                       // HASH VALUE FOR EACH CSV.
+                ){} // END Brain case class
 
 /**
 	* case class Findings
@@ -68,7 +71,7 @@ case class Findings( id: Int,                                   // primary key
                      mft: MFTAssessment,                        // contains result of MFTAssessment
                      registry: RegAssessment,                   // contains result of Registry Assessment
                      prefetch: PrefAssessment                   // contains result of Prefetch Assessment
-                   ){}
+                   ){} // END Findings case class
 
 /**
 	* case class Registration
@@ -84,7 +87,7 @@ case class Registration( id: Int,                               // primary key
 												 user: User,                            // name of user/organization
                          tech: Technical,                       // client's technical details
 											   dir: String                            // location where user runs program from.
-												){}
+												){} // END Registration case class
 
 /**
 	* case class User
@@ -99,7 +102,7 @@ case class User( id: Int,                       // primary key
                  address: Array[String],        // name of user/organization
                  phone: Int,                    // client's technical details
                  badStatus: Boolean = false     // location where user runs program from.
-                       ){}
+               ){} // END User case class
 /**
 	* case class Technical
 	* Purpose: Contains technical information about the client
@@ -110,7 +113,8 @@ case class User( id: Int,                       // primary key
 case class Technical( val id: Int,
                       val ip: Int,
                       val port: Int,
-                      val whateverelse: String){}
+                      val whateverelse: String
+                    ){} // END Technical case class
 
 class BigBrainSecurity extends Setup {
 
@@ -120,6 +124,14 @@ class BigBrainSecurity extends Setup {
 		.enableHiveSupport()
 		.getOrCreate()
 
+	/******************* Actual main() calls run() ***************************/
+	/**
+	  *  Everything is run from run() because eventually the main()
+		*  will run out of a different class and will receive JSON objects from
+	  *  clients.
+		*
+		*  Nevertheless, this program should use Actors to support concurrency.
+		*/
 	def main(args: Array[String]): Unit = run() // END main()
 
 	/*************************FUNCTIONAL MAIN METHOD**************************/
@@ -127,25 +139,21 @@ class BigBrainSecurity extends Setup {
 
 		/***********************VARIABLE DECLARATIONS***************************/
 		/* Create map of values from config file. */
-		val configMap = super.getConfig()
+		val configMap = super.getConfig("Users/glassCodeBender/Applications/BBS/config.txt")
 
-		/* Find file locations from config.txt */
-		val prefetchDirectory = configMap("prefetch_csv_directory_location").get
-		val safePrefetchList = configMap("safe_prefetch_list").get
+		/* Will need classes for each operating system */
+		val operatingSystem = configMap("operating_system").get
 
-		/****************************MAIN METHOD CALLS***************************/
+		/* Run BBS based on the user's operating system */
+		val results = operatingSystem match {
+			case "Windows10" => new BBSWindows10(configMap)
+				case "Windows" => new BBSWindows7(configMap)
+				case "Mac" => new BBSMac(configMap)
+				case _ => new BBSWindows7(configMap)
+		}
 
-		/* Generate an Array of filenames that the user should check for tampering */
-		private val analyzePrefResult: ParArray[String] = new AnalyzePrefetch(prefetchDirectory, safePrefetchList).analyze
-
-
-		println("WARNING: Prefetch files from Windows 8 and 10 will give inaccurate results.\n"
-		+ "Only files from Windows 7 systems and earlier will give accurate results. ")
-		analyzePrefResult.foreach(println)
-
-		/* Clean up MFT csv with CleanMFT.scala*/
-		val cleanedMFT = new CleanMFT(spark, configMap)
-		cleanedMFT.runCleanMFT
+		/* This value should be determined by the state of the program. */
+		val id: Int = 312234
 
 		/* IntegrityCheck.scala depends on the user's OS */
 

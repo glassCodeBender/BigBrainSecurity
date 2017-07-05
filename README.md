@@ -1,6 +1,7 @@
 # BigBrainSecurity
 
-This program is a work in progress. 
+This program is a work in progress. Contact me if you are interested in collaborating on the project. I would love to
+work with anyone that has experience with the play framework, flask, reactive programming, spark, or memory forensics. 
 
 Big Brain Security is a computer forensic automation program/IDS written primarily in Scala with Apache Spark. I'm 
 also using python to develop a plugin for the Volatility Framework.

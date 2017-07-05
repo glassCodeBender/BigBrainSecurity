@@ -18,6 +18,8 @@ import scala.io.Source
 	* @date: June 10, 2017
 	* @version: 1.0
 	*
+	*          class CleanMFT.scala
+	*
 	*          Program Purpose: This program takes the cleanMFT.py
 	*          project I wrote with pandas DataFrames and applies
 	*          the program's principals to large scale big data
@@ -31,18 +33,29 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
 		* This method does all the work.
 		* @return Unit
 		*/
-	def runCleanMFT (): Unit = {
+	def runCleanMFT(): Unit = {
 
 		/* Find file locations from config.txt */
 		val importFile = configMap("mft_csv_location").get
 		val regexFile = configMap("text_file_with_values_to_include_in_output").get
 		val outputName = configMap("filtered_csv_output_location").get
 		val allCSVDir = configMap("all_csv_output_destination_directory").get
+		/* We can probably remove this because some things should not be optional */
+		// val BBSLocation = configMap("BBS_directory").getOrElse("/Users/glassCodeBender/Applications/BBS")
 
 		/* Take config.txt input and place values in variables.  */
-		val filterIndex: Boolean =  configMap("create_integer_index").getOrElse("false").toBoolean
-		val suspicious: Boolean = configMap("filter_suspicious").getOrElse("false").toBoolean
-		val defFilter: Boolean = configMap("default_filter").getOrElse("false").toBoolean
+		val filterIndex: Boolean =  configMap("create_integer_index")
+			.map(_.toLowerCase)
+			.getOrElse("false")
+			.toBoolean
+		val suspicious: Boolean = configMap("filter_suspicious")
+			.map(_.toLowerCase)
+			.getOrElse("false")
+			.toBoolean
+		val defFilter: Boolean = configMap("default_filter")
+			.map(_.toLowerCase)
+			.getOrElse("false")
+			.toBoolean
 
 		/* Locations to filter by */
 		lazy val startIndex = configMap("start_index").get
@@ -122,7 +135,8 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
 	} // END if
 
 		/*
-		 * THIS PROGRAM NEEDS TO OUTPUT CSV FILES AT SOME POINT.
+		 * THIS PROGRAM NEEDS TO OUTPUT CSV FILES OR EXPORT
+		 * CHANGED CSVs IN A CASE CLASS.
 		 */
 
 		/* Save the processed Data to a compressed file. */

@@ -40,8 +40,6 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
 		val regexFile = configMap("text_file_with_values_to_include_in_output").get
 		val outputName = configMap("filtered_csv_output_location").get
 		val allCSVDir = configMap("all_csv_output_destination_directory").get
-		/* We can probably remove this because some things should not be optional */
-		// val BBSLocation = configMap("BBS_directory").getOrElse("/Users/glassCodeBender/Applications/BBS")
 
 		/* Take config.txt input and place values in variables.  */
 		val filterIndex: Boolean =  configMap("create_integer_index")

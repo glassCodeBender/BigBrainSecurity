@@ -50,10 +50,10 @@ import play.api.libs.json._
 case class Brain( id: Int,                                   // primary key
                   dateTime: java.util.Date = java.util.Date, // primary key
                   name: String,                              // contains user's name
-                  mftCSV: String,                            // contains the mft in csv format
-                  regCSV: String,                            // contains registry in csv format.
-                  prefResults: String,                       // contains any extra information
-                  hashes: List[String]                       // HASH VALUE FOR EACH CSV.
+                  mftCSV: Option[String],                    // contains the mft in csv format
+                  regCSV: Option[String],                    // contains registry in csv format.
+                  prefResults: Option[String],               // contains any extra information
+                  hashes: Option[List[String]]               // HASH VALUE FOR EACH CSV.
                 ){} // END Brain case class
 object Brain {
   implicit val format: Format[Brain] = Json.format[Brain]
@@ -71,9 +71,9 @@ object Brain {
 
 case class Findings( id: Int,                                   // primary key
                      dateTime: java.util.Date = java.util.Date, // primary key
-                     mft: MFTAssessment,                        // contains result of MFTAssessment
-                     registry: RegAssessment,                   // contains result of Registry Assessment
-                     prefetch: PrefAssessment                   // contains result of Prefetch Assessment
+                     mft: Option[MFTAssessment],                // contains result of MFTAssessment
+                     registry: Option[RegAssessment],           // contains result of Registry Assessment
+                     prefetch: Option[PrefAssessment]           // contains result of Prefetch Assessment
                    ){} // END Findings case class
 object Findings {
   implicit val format: Format[Findings] = Json.format[Findings]

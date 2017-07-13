@@ -28,7 +28,7 @@ object CommonFileVariations extends App with FileFun {
     * Functional MAIN Method
     * @return ParArray[String] : An Array of Strings we'll convert to regex for testing filesystem.
     */
-  def analyze(lookupFilename: String = "/Users/glassCodeBender/Documents/common_files.txt"): ParArray[String] = {
+  def createArr(lookupFilename: String = "/Users/glassCodeBender/Documents/common_files.txt"): ParArray[String] = {
 
     val lookupFile = lookupFilename // Stores the file that contains the huge list of filenames
 

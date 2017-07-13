@@ -24,7 +24,7 @@ import scala.collection.parallel.mutable.ParArray
 object CommonFileVariations extends App with FileFun {
 
   /**
-    * analyze()
+    * createArr()
     * Functional MAIN Method
     * @return ParArray[String] : An Array of Strings we'll convert to regex for testing filesystem.
     */
@@ -33,14 +33,11 @@ object CommonFileVariations extends App with FileFun {
     val lookupFile = lookupFilename // Stores the file that contains the huge list of filenames
 
     /** Generate an Array made up of legitimate prefetch filenames. */
-    val safePrefetchArray = processPrefFile(lookupFile).getOrElse(ParArray[String]())
+    val safePrefetchArray = processPrefFile(lookupFile).getOrElse(Array[String]())
 
     /** Create an Array made up of common system filenames. */
     val otherReg = """[A-Z0-9.]+""".r
-    val commonFiles = safePrefetchArray.map(otherReg.findFirstIn(_).mkString)
-      .distinct
-      .toArray
-      .par
+    val commonFiles = safePrefetchArray.map(otherReg.findFirstIn(_).mkString).distinct
 
     // NOTE: Check the commonFiles Array and make sure the names aren't FQDNs.
     // If they are, write a regex to parse Array.
@@ -60,26 +57,25 @@ object CommonFileVariations extends App with FileFun {
       var j = 0
       while(j < commonFiles(i).length){
         val str = commonFiles(i).charAt(j).toString
-        // we might need to change this regex slightly to include more than one value {2}
+        // we might need to change this regex slightly to include more than one value
         commonFileVariationsArr +: commonFiles(i).replaceAll(str, "[0-9a-zA-Z]")
         j += 1
       } // END while
       i += 1
     } // END while to popular commonFileVariationsArr ArrayBuffer
 
-    val fileVariationsParArr = commonFileVariationsArr.toArray.par
+    return commonFileVariationsArr.toArray.par
 
     // Now we need to use this array to test against the MFT
-    return fileVariationsParArr
 
-  } // END analyze()
+  } // END createArr()
   /**
     * processPrefFile()
     * Imports file and runs a regex over it to extract prefetch file names
     * @param lookupFile
     * @return
     */
-  def processPrefFile(lookupFile: String): Option[ParArray[String]] ={
+  def processPrefFile(lookupFile: String): Option[Array[String]] ={
 
     val reg = """[A-Z0-9]+.\w[-A-Z0-9]+.pf""".r
 
@@ -88,7 +84,7 @@ object CommonFileVariations extends App with FileFun {
         .getLines
         .toArray
         .map ( reg.findFirstIn ( _ ).mkString )
-        .par)
+      )
     } catch {
       case ioe: IOException =>
         println(ioe + s"There was a problem importing the file $lookupFile")

@@ -64,7 +64,7 @@ object CommonFileVariations extends App with FileFun {
       i += 1
     } // END while to popular commonFileVariationsArr ArrayBuffer
 
-    return commonFileVariationsArr.toArray.par
+    return commonFileVariationsArr.toParArray
 
     // Now we need to use this array to test against the MFT
 

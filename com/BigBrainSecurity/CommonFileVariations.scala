@@ -73,7 +73,7 @@ object CommonFileVariations extends App with FileFun {
     * processPrefFile()
     * Imports file and runs a regex over it to extract prefetch file names
     * @param lookupFile
-    * @return
+    * @return Option[Array[String]]
     */
   def processPrefFile(lookupFile: String): Option[Array[String]] ={
 

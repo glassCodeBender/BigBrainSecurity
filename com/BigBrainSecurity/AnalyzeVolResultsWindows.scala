@@ -1,4 +1,4 @@
-package com.BigBrainSecurity
+package com.BigBrainSecurity.vol.windows
 
 /**
   * Program Purpose: Analyzes volatility results and returns useful info.
@@ -6,7 +6,7 @@ package com.BigBrainSecurity
 
 import scala.io.Source
 
-class AnalyzeVolResults( val discovery: Discovery ) {
+class AnalyzeVolResultsWindows( val discovery: Discovery ) {
 
   /** Stores each individual object from Discovery case class */
   val process: Process = discovery.proc    // (psxview, psScan, psList, execInProcList)

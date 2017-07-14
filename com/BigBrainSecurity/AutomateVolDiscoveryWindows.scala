@@ -77,7 +77,8 @@ object AutomateVolDiscoveryWindows extends App{
     val bigPoolCSV = s"python vol.py -f $memFile --profile=$os bigpools --tags" !!
 
     val bigPools = s"python vol.py -f $memFile --profile=$os bigpools" !!
-    val bigPoolsByFreq = s"awk '{print  $2}' $bigPools | sort | uniq -c | sort -rn" !!
+    val scanByFreq = "awk '{print  $2}'" + s"$bigPools | sort | uniq -c | sort -rn"
+    val bigPoolsByFreq = scanByFreq !!
 
     // NOTE: We need to use a find replace to include descriptions of pooltags from pooltag.txt
     // if we decided to filter by freq. I'm not 100% this will be worth my time if my time yet.
@@ -119,29 +120,29 @@ object AutomateVolDiscoveryWindows extends App{
   /**
     * parseOutput()
     * Remove the stuff we don't need from the output
-    * @param output
+    * @param volOutput
     * @return Some[IndexedSeq[String]]
     */
-  def parseOutput(output: String): Some[IndexedSeq[String]] = {
-    Some( Source.fromString(output)
+  def parseOutput(volOutput: String): Some[IndexedSeq[String]] = {
+    Some( Source.fromString(volOutput)
       .getLines
       .dropWhile( !_.contains("------") )
       .dropWhile( _.contains("-----") )
-      .toIndexedSeq 
+      .toIndexedSeq
     )
   } // END parseOutput()
 
   /**
     * seqParse()
-    * Take an IndexedSeq, split each and we get get a Seq of Seqs. 
-    * @param output
-    * @return Some[IndexedSeq[IndexedSeq[String]]] 
+    * Take an IndexedSeq, split each and we get get a Seq of Seqs.
+    * @param volOutputSeq
+    * @return Some[IndexedSeq[IndexedSeq[String]]]
     */
-  def seqParse(output: IndexedSeq[String]): Option[IndexedSeq[IndexedSeq[String]]] = {
-    val splitResult = output.map( _.split("\\s+").toIndexedSeq )
-    
+  def seqParse(volOutputSeq: IndexedSeq[String]): Option[IndexedSeq[IndexedSeq[String]]] = {
+    val splitResult = volOutputSeq.map( _.split("\\s+" ).toIndexedSeq )
+
     return Some(splitResult)
   } // END seqParse()
 
 
-} // END AutomateVolDiscoveryWindows object
+} // END AutomateVolDiscovery object

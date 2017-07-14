@@ -9,15 +9,6 @@ package com.BigBrainSecurity.vol.windows
   *      store them in variables that we can parse and use in another program.
   */
 
-/**
-  * @author J. Alexander
-  * @date July 13, 2017
-  * @version 1.0
-  *
-  *      Program Purpose: Automate volatility discovery commands and
-  *      store them in variables that we can parse and use in another program.
-  */
-
 import sys.process._
 import scala.io.Source
 

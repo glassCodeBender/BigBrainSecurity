@@ -197,7 +197,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     df.registerTempTable("DataFrame")
 
     val indexDF = spark.sql (
-      """SELECT * FROM DataFrame WHERE Index > sIndex && Index < eIndex""")
+      """SELECT * FROM DataFrame WHERE $"Index" > sIndex && $"Index" < eIndex""")
 
     return indexDF
   } // END indexFilter()
@@ -216,6 +216,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     val updatedDF = df.filter( $"Type" === "File Modified")
       .filter( $"Type" === "MFT Entry" )
       .filter($"Desc" rlike regexExt)
+
     return updatedDF
   } // END defaultFilter()
 
@@ -293,9 +294,10 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     /* Filter by Query */
     val dateDF = spark.sql (
       """
-SELECT * FROM DataFrame
-														WHERE Date_Time >= sDate AND Date_Time =< eDate
-		                         """)
+      SELECT * FROM DataFrame
+      WHERE Date_Time >= sDate AND Date_Time =< eDate
+      """)
+
     return dateDF
   } // END filterByDate()
 
@@ -337,7 +339,7 @@ SELECT * FROM DataFrame
         .toArray
         .map ( _.trim )
         .par)
-    }catch {
+    } catch {
       case ioe: IOException =>
         println ( s"There was a problem importing the file $fileName.\n" + ioe )
         None

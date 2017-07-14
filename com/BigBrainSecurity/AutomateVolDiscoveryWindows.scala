@@ -1,4 +1,4 @@
-package com.BigBrainSecurity
+package com.BigBrainSecurity.vol.windows
 
 /**
   * @author J. Alexander
@@ -7,7 +7,7 @@ package com.BigBrainSecurity
   *
   *      Program Purpose: Automate volatility discovery commands and
   *      store them in variables that we can parse and use in another program.
-  */package com.BigBrainSecurity.vol.windows
+  */
 
 /**
   * @author J. Alexander

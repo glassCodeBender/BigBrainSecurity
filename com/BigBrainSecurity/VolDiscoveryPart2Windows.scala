@@ -1,4 +1,4 @@
-package com.BigBrainSecurity.vol
+package com.BigBrainSecurity.vol.windows
 
 /**
   * Program Purpose: Takes the results from AutomateVolDiscovery.scala
@@ -7,7 +7,7 @@ package com.BigBrainSecurity.vol
 import sys.process._
 import scala.io.Source
 
-class VolDiscoveryPart2(pid: String, memFile: String, os: String ) {
+class VolDiscoveryPart2Windows(pid: String, memFile: String, os: String ) {
 
   def run = {
     // Stores domain name we’ll search for in processes.

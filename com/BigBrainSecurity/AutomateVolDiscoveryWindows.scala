@@ -115,5 +115,33 @@ object AutomateVolDiscoveryWindows extends App{
 
   } // END run()
 
+  /************* UTILITY METHODS TO MAKE VALUES IN MODULE OUTPUTS ACCESSIBLE ***********/
+  /**
+    * parseOutput()
+    * Remove the stuff we don't need from the output
+    * @param output
+    * @return Some[IndexedSeq[String]]
+    */
+  def parseOutput(output: String): Some[IndexedSeq[String]] = {
+    Some( Source.fromString(output)
+      .getLines
+      .dropWhile( !_.contains("------") )
+      .dropWhile( _.contains("-----") )
+      .toIndexedSeq 
+    )
+  } // END parseOutput()
 
-} // END AutomateVolDiscovery object
+  /**
+    * seqParse()
+    * Take an IndexedSeq, split each and we get get a Seq of Seqs. 
+    * @param output
+    * @return Some[IndexedSeq[IndexedSeq[String]]] 
+    */
+  def seqParse(output: IndexedSeq[String]): Option[IndexedSeq[IndexedSeq[String]]] = {
+    val splitResult = output.map( _.split("\\s+").toIndexedSeq )
+    
+    return Some(splitResult)
+  } // END seqParse()
+
+
+} // END AutomateVolDiscoveryWindows object

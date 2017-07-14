@@ -1,4 +1,4 @@
-package com.BigBrainSecurity.vol
+package com.BigBrainSecurity
 
 /**
   * @author J. Alexander
@@ -20,7 +20,7 @@ case class Process(psxview: String, psScan: String, psList: String, execInProcLi
 case class Pool(bigPools: String, bigPoolByFreq: String )
 
 /** Store History info discovered in memory */
-case class History(cmdScan: String, svcScan: String, envVars: String)
+case class History(cmdScan: String, svcScan: String, envVars: String, priv: String)
 
 /** Stores all the processes we need to audit. */
 case class ToAudit(pid: List[Int], name: List[String], hexAD: List[String], info: List[String])
@@ -41,19 +41,19 @@ object AutomateVolDiscovery extends App{
     /** ************************ PERFORM VOLATILITY SCANS **************************/
     // DO VARIETY OF PROCESS SCANS
     // If you see False in the splits column, there’s a problem.
-    val psxView: String = s"python vol.py -f $memFile --profile=$os psxview —apply-rules" !!
+    val psxview = s"python vol.py -f $memFile --profile=$os psxview —apply-rules" !!
 
     // list processes in memory.
-    val psList: String = s"python vol.py -f $memFile --profile=$os pslist" !!
-    val psScan: String = s"python vol.py -f $memFile --profile=$os psscan" !!
+    val psList = s"python vol.py -f $memFile --profile=$os pslist" !!
+    val psScan = s"python vol.py -f $memFile --profile=$os psscan" !!
 
     // Make list of big pool allocations and sort based on tag frequency (145)
-    val bigPools: String = s"python vol.py -f $memFile --profile=$os bigpools" !!
-    val poolByFreq = "awk '{print  $2}' " + s"$bigPools | sort | uniq -c | sort -rn"
-    val bigPoolsByFreq: String = poolByFreq !!
+    val bigPools = s"python vol.py -f $memFile --profile=$os bigpools" !!
+    val bigPoolsByFreq = s"awk '{print  $2}' $bigPools | sort | uniq -c | sort -rn" !!
 
     // find command histories
     val cmdScan = s"python vol.py -f $memFile --profile=$os cmdscan" !!
+    val cmdOutput = s"python vol.py -f $memFile --profile=$os consoles" !!
 
     // locate windows service records
     val svcScan = s"python vol.py -f $memFile --profile=$os svcscan" !!
@@ -61,14 +61,14 @@ object AutomateVolDiscovery extends App{
     // environmental variables scan
     val envVars = s"python vol.py -f $memFile --profile=$os envars" !!
 
+    // Only gives privileges that a process specifically enabled
+    val priv = s"python vol.py -f $memFile --profile=$os privs --silent" !!
+
     /** Extract all executables in the active process
       * This can also be written with a regex flag */
     val execInProcList = s"python vol.py -f $memFile --profile=$os procdump" !!
 
-    /** Store results in case classes */
-    val process = Process(psxView, psScan, psList, execInProcList)
-    val history = History(cmdScan, svcScan, envVars)
-    val pool = Pool(bigPools, bigPoolsByFreq)
+
 
 
   } // END run()

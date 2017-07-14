@@ -1,45 +1,102 @@
-package com.BigBrainSecurity.vol.windows
+import java.io.{FileNotFoundException, IOException}
 
-/**
-  * Program Purpose: Takes the results from AutomateVolDiscovery.scala
-  * and inputs them into other volatility modules.
-  */
-import sys.process._
+import com.BigBrainSecurity.FileFun
+
+import scala.collection.mutable.ArrayBuffer
+import scala.collection.parallel.mutable.ParArray
 import scala.io.Source
 
-class VolProcDiscoveryWindows(pid: String, memFile: String, os: String ) {
+/**
+  * @author J. Alexander
+  * @date July 13, 2017
+  *      Program Purpose: Create an Array made up of Strings that will be
+  *      converted to regular expressions that test for variations of common
+  *      filenames.
+  */
 
-  def run = {
-    // Stores domain name we’ll search for in processes.
-    val domainName = "windows-update-http.com"
+package com.BigBrainSecurity
 
-    // Make sure the filenames in the details and the filenames for each process match (182)
-    val fileNameDiscrepancies = s"python vol.py -f $memFile --profile=$os -p $pid handles -t File, Mutant --silent" !!
+import java.io.{ FileNotFoundException, IOException }
 
-    // Dump handles for the System process to see all open handles to kernel modules
+import scala.io.Source
+import scala.collection.parallel.mutable.ParArray
 
-    // Do a yara scan PROBABLY NEED TO MOVE TO DIFFERENT CLASS
-    val yaraByDomain = s"python vol.py -f $memFile yarascan --profile=$os --yara-rules=$domainName" !!
+object CommonFileVariations extends App with FileFun {
+
+  /**
+    * createArr()
+    * Functional MAIN Method
+    * @return ParArray[String] : An Array of Strings we'll convert to regex for testing filesystem.
+    */
+  def createArr(lookupFilename: String = "/Users/glassCodeBender/Documents/common_files.txt"): ParArray[String] = {
+
+    val lookupFile = lookupFilename // Stores the file that contains the huge list of filenames
+
+    /** Generate an Array made up of legitimate prefetch filenames. */
+    val safePrefetchArray = processPrefFile(lookupFile).getOrElse(Array[String]())
+
+    /** Create an Array made up of common system filenames. */
+    val otherReg = """[A-Z0-9.]+""".r
+    val commonFiles = safePrefetchArray.map(otherReg.findFirstIn(_).mkString).distinct
+
+    /** IMPORTANT!!
+      * Check the commonFiles Array and make sure the names are NOT FQDNs.
+      * If they are, write a regex to parse Array.
+      */
+
+    /** Now we need to find all variations of the common filenames. Using a find
+      * replace on each String. We will use an ArrayBuffer that'll allow us to
+      * append the filenames quickly.
+      */
+
+    val commonFileVariationsArr = ArrayBuffer[String]()
+
+    /** Create an array Buffer made up of Strings that we'll convert to regular expression.
+      * We replace each character in each word w/ a regex that tests for variations of that word.
+      * When we use the regexs, we'll need to make sure none of the results match any of
+      * the strings in commonFiles ParArray after the test.
+      */
+    var i = 0
+    while (i < commonFiles.length){
+      var j = 0
+      while(j < commonFiles(i).length){
+        val str = commonFiles(i).charAt(j).toString
+        // we might need to change this regex slightly to include more than one value
+        commonFileVariationsArr +: commonFiles(i).replaceAll(str, "[0-9a-zA-Z]")
+        j += 1
+      } // END while
+      i += 1
+    } // END while to popular commonFileVariationsArr ArrayBuffer
+
+    val fileVars = commonFileVariationsArr.map( "*" + _ + "*" )
 
 
-    // Look through getSid for SIDs with nothing after SID is displayed. Then pass SID to printkey plugin.
+    return fileVars.toParArray
+  } // END createArr()
+  /**
+    * processPrefFile()
+    * Imports file and runs a regex over it to extract prefetch file names
+    * @param lookupFile
+    * @return
+    */
+  def processPrefFile(lookupFile: String): Option[Array[String]] ={
 
-    // Allows us to determine which privilege the process enabled (list on 171-172)
-    val priv = s"python vol.py -f $memFile --profile=$os privs -p $pid" !!
+    val reg = """[A-Z0-9]+.\w[-A-Z0-9]+.pf""".r
 
-    // NOTE: We don't really need to use the command below, but might be easier than manually parsing.
-    // Count the times that Enabled occurs.
-    // Would be nice to store in Vector for quick access, but we need indexed sequence.
-    // IGNORE UNDOCK PRIV: explorer.exe always enables undock priv.
+    try {
+      Some( Source.fromFile ( lookupFile )
+        .getLines
+        .toArray
+        .map ( reg.findFirstIn ( _ ).mkString )
+      )
+    } catch {
+      case ioe: IOException =>
+        println(ioe + s"There was a problem importing the file $lookupFile")
+        None
+      case fnf: FileNotFoundException =>
+        println(fnf + s"The file you tried to $lookupFile import could not be found")
+        None
+    } // END try/catch
+  } // END processPrefFile()
 
-    // Only gives privileges that a process specifically enabled.
-    val enabledPriv = s"python vol.py -f $memFile --profile=$os privs --silent" !!
-
-
-    // SEE PAGE 168 for example of "printkey -K *" command based off output of getsid
-    val getSID = s"python vol.py -f $memFile --profile=$os getsid -p $pid" !!
-
-  } // END run()
-
-
-} // END VolDiscoveryPart2 class
+} // END CommonFileVariations object

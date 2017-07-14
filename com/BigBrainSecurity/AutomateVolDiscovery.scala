@@ -41,15 +41,16 @@ object AutomateVolDiscovery extends App{
     /** ************************ PERFORM VOLATILITY SCANS **************************/
     // DO VARIETY OF PROCESS SCANS
     // If you see False in the splits column, there’s a problem.
-    val psxview = s"python vol.py -f $memFile --profile=$os psxview —apply-rules" !!
+    val psxView: String = s"python vol.py -f $memFile --profile=$os psxview —apply-rules" !!
 
     // list processes in memory.
-    val psList = s"python vol.py -f $memFile --profile=$os pslist" !!
-    val psScan = s"python vol.py -f $memFile --profile=$os psscan" !!
+    val psList: String = s"python vol.py -f $memFile --profile=$os pslist" !!
+    val psScan: String = s"python vol.py -f $memFile --profile=$os psscan" !!
 
     // Make list of big pool allocations and sort based on tag frequency (145)
-    val bigPools = s"python vol.py -f $memFile --profile=$os bigpools" !!
-    val bigPoolsByFreq = s"awk '{print  $2}' $bigPools | sort | uniq -c | sort -rn" !!
+    val bigPools: String = s"python vol.py -f $memFile --profile=$os bigpools" !!
+    val poolByFreq = "awk '{print  $2}' " + s"$bigPools | sort | uniq -c | sort -rn"
+    val bigPoolsByFreq: String = poolByFreq !!
 
     // find command histories
     val cmdScan = s"python vol.py -f $memFile --profile=$os cmdscan" !!
@@ -64,7 +65,10 @@ object AutomateVolDiscovery extends App{
       * This can also be written with a regex flag */
     val execInProcList = s"python vol.py -f $memFile --profile=$os procdump" !!
 
-
+    /** Store results in case classes */
+    val process = Process(psxView, psScan, psList, execInProcList)
+    val history = History(cmdScan, svcScan, envVars)
+    val pool = Pool(bigPools, bigPoolsByFreq)
 
 
   } // END run()

@@ -1,4 +1,4 @@
-package com.BigBrainSecurity.vol
+package com.BigBrainSecurity
 
 /**
   * Program Purpose: Analyzes volatility results and returns useful info.
@@ -21,7 +21,7 @@ class AnalyzeVolResults( val discovery: Discovery ) {
     */
   val foundProcDiscrepancies = Source.fromString( process.psxview )
     .getLines
-    .map( _.contains( "False" ) )
+    .filter( _.contains( "False" ) )
     .toArray
     .par
 

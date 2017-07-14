@@ -121,7 +121,10 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     if ( startDate != None || endDate != None || startTime != None || endTime != None ) {
 
       /* Create Start and Stop Timestamps for filtering */
-      val (startStamp, endStamp) = makeTimeStamp( startDate.mkString, endDate.mkString, startTime.mkString, endTime.mkString )
+      val (startStamp, endStamp) = makeTimeStamp( startDate.mkString, 
+        endDate.mkString, 
+        startTime.mkString, 
+        endTime.mkString )
       /* generate current state of DataFrame when filtering by timestamp. */
       val dateDF = filterByDate( theDF, startStamp, endStamp )
     } // END if statement filter by date
@@ -197,7 +200,8 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     df.registerTempTable("DataFrame")
 
     val indexDF = spark.sql (
-      """SELECT * FROM DataFrame WHERE $"Index" > sIndex && $"Index" < eIndex""")
+      """SELECT * FROM DataFrame
+        |WHERE $"Index" > sIndex && $"Index" < eIndex""".stripMargin)
 
     return indexDF
   } // END indexFilter()

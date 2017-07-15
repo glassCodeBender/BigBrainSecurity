@@ -106,8 +106,6 @@ object AutomateVolDiscoveryWindows extends App{
     // scan for connections and sockets
     val socketsAndConnections = s"python vol.py -f $memFile --profile=$os netscan" !!
 
-
-
     /** Extract all executables in the active process
       * This can also be written with a regex flag */
     val execInProcList = s"python vol.py -f $memFile --profile=$os procdump" !!
@@ -151,9 +149,9 @@ object AutomateVolDiscoveryWindows extends App{
     * seqParse()
     * Take an IndexedSeq, split each and we get get a Seq of Seqs.
     * @param volStrVector
-    * @return Some[LinearSeq[Vector[String]]]
+    * @return Some[List[Vector[String]]]
     */
-  def seqParse( volStrVector: LinearSeq[String] ): Option[ LinearSeq[Vector[String]] ] = {
+  def seqParse( volStrVector: List[String] ): Option[ List[Vector[String]] ] = {
     val splitResult = volStrVector.map( _.split("\\s+" ).toVector )
 
     return Some(splitResult)

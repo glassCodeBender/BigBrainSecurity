@@ -9,6 +9,7 @@ package com.BigBrainSecurity.vol.windows
   *      store them in variables that we can parse and use in another program.
   */
 
+import scala.collection.LinearSeq
 import sys.process._
 import scala.io.Source
 
@@ -23,7 +24,7 @@ case class Pool(bigPools: String, bigPoolByFreq: String )
 case class History(cmdScan: String, svcScan: String, envVars: String, priv: String)
 
 /** Stores all the processes we need to audit. */
-case class ToAudit(pid: List[Int], name: List[String], hexAD: List[String], info: List[String])
+case class ToAudit(pid: Vector[Int], name: Vector[String], hexAD: Vector[String], info: Vector[String])
 
 /** Stores all of the raw data we discovered. This class will be returned from main. */
 case class Discovery(proc: Process, pool: Pool, history: History, audit: ToAudit)
@@ -112,34 +113,48 @@ object AutomateVolDiscoveryWindows extends App{
     val execInProcList = s"python vol.py -f $memFile --profile=$os procdump" !!
 
 
-
-
   } // END run()
 
   /************* UTILITY METHODS TO MAKE VALUES IN MODULE OUTPUTS ACCESSIBLE ***********/
   /**
     * parseOutput()
     * Remove the stuff we don't need from the output
-    * @param volOutput
-    * @return Some[IndexedSeq[String]]
+    * @param volStr
+    * @return Some[List[String]]
     */
-  def parseOutput(volOutput: String): Some[IndexedSeq[String]] = {
-    Some( Source.fromString(volOutput)
+  def parseOutput(volStr: String): Some[List[String]] = {
+    Some( Source.fromString(volStr)
       .getLines
       .dropWhile( !_.contains("------") )
       .dropWhile( _.contains("-----") )
-      .toIndexedSeq
+      .toList
     )
   } // END parseOutput()
 
+  def parseOutputAsterisks(volStr: String): Some[List[String]] = {
+    Some( Source.fromString(volStr)
+      .getLines
+      .dropWhile( !_.contains("************") )
+      .dropWhile( _.contains("************") )
+      .toList
+    )
+  } // END parseOutput()
+
+  def parseOutputDropHead(volStr: String): Some[List[String]] = {
+    Some( Source.fromString(volStr)
+      .getLines
+      .toList
+      .tail
+    )
+  } // END parseOutput()
   /**
     * seqParse()
     * Take an IndexedSeq, split each and we get get a Seq of Seqs.
-    * @param volOutputSeq
-    * @return Some[IndexedSeq[IndexedSeq[String]]]
+    * @param volStrVector
+    * @return Some[LinearSeq[Vector[String]]]
     */
-  def seqParse(volOutputSeq: IndexedSeq[String]): Option[IndexedSeq[IndexedSeq[String]]] = {
-    val splitResult = volOutputSeq.map( _.split("\\s+" ).toIndexedSeq )
+  def seqParse( volStrVector: LinearSeq[String] ): Option[ LinearSeq[Vector[String]] ] = {
+    val splitResult = volStrVector.map( _.split("\\s+" ).toVector )
 
     return Some(splitResult)
   } // END seqParse()

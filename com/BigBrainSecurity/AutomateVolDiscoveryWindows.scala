@@ -2,7 +2,6 @@ package com.BigBrainSecurity.vol.windows
 
 /**
   * @author J. Alexander
-  * @date July 13, 2017
   * @version 1.0
   *
   *      Program Purpose: Automate volatility discovery commands and
@@ -146,11 +145,11 @@ object AutomateVolDiscoveryWindows extends App{
   } // END parseOutput()
   /**
     * seqParse()
-    * Take a List, split each and we get get a List of Vectors.
+    * Take an IndexedSeq, split each and we get get a Seq of Seqs.
     * @param volStrVector
-    * @return Some[List[Vector[String]]]
+    * @return Option[List[Vector[String]]]
     */
-  def seqParse( volStrVector: List[String] ): Option[ List[Vector[String]] ] = {
+  def seqParse( volStrVector: List[String] ): Option[List[Vector[String]]] = {
     val splitResult = volStrVector.map( _.split("\\s+").toVector )
 
     return Some(splitResult)

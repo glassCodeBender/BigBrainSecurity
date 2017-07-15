@@ -9,7 +9,6 @@ package com.BigBrainSecurity.vol.windows
   *      store them in variables that we can parse and use in another program.
   */
 
-import scala.collection.LinearSeq
 import sys.process._
 import scala.io.Source
 
@@ -53,7 +52,6 @@ object AutomateVolDiscoveryWindows extends App{
     // Look for the signature names (Key) of Token and Process then note them.
     // This allows us to make sure that the processes are located in Nonpaged memory.
 
-
     /** DO VARIETY OF PROCESS SCANS */
     // If you see False in the splits column, there’s a problem.
     val psxview = s"python vol.py -f $memFile --profile=$os psxview —apply-rules" !!
@@ -71,15 +69,16 @@ object AutomateVolDiscoveryWindows extends App{
     // Run regex from BigBrainSecurity over all values in name column.
 
     /** Big Pool Scans */
-
-      /** NOT A PRIORITY UNTIL OTHER ANALYSIS SECTIONS ARE COMPLETE */
+      /** Big Pool NOT A PRIORITY UNTIL OTHER ANALYSIS SECTIONS ARE COMPLETE */
     // Make list of big pool allocations and sort based on tag frequency (145)
     // It's likely that bigPoolCSV will be the most useful.
     val bigPoolCSV = s"python vol.py -f $memFile --profile=$os bigpools --tags" !!
 
     val bigPools = s"python vol.py -f $memFile --profile=$os bigpools" !!
-    val scanByFreq = "awk '{print  $2}'" + s"$bigPools | sort | uniq -c | sort -rn"
-    val bigPoolsByFreq = scanByFreq !!
+
+    val bigPoolByFreq: Option[String] = {
+      Some( Seq( "/bin/sh", "-c", "awk '{print $2}' " + s"$bigPools | sort | uniq -c | sort -rn" ).!!.trim )
+    }
 
     // NOTE: We need to use a find replace to include descriptions of pooltags from pooltag.txt
     // if we decided to filter by freq. I'm not 100% this will be worth my time if my time yet.
@@ -120,7 +119,7 @@ object AutomateVolDiscoveryWindows extends App{
     * @param volStr
     * @return Some[List[String]]
     */
-  def parseOutput(volStr: String): Some[List[String]] = {
+  def parseOutput(volStr: String): Option[List[String]] = {
     Some( Source.fromString(volStr)
       .getLines
       .dropWhile( !_.contains("------") )
@@ -129,7 +128,7 @@ object AutomateVolDiscoveryWindows extends App{
     )
   } // END parseOutput()
 
-  def parseOutputAsterisks(volStr: String): Some[List[String]] = {
+  def parseOutputAsterisks(volStr: String): Option[List[String]] = {
     Some( Source.fromString(volStr)
       .getLines
       .dropWhile( !_.contains("************") )
@@ -138,7 +137,7 @@ object AutomateVolDiscoveryWindows extends App{
     )
   } // END parseOutput()
 
-  def parseOutputDropHead(volStr: String): Some[List[String]] = {
+  def parseOutputDropHead(volStr: String): Option[List[String]] = {
     Some( Source.fromString(volStr)
       .getLines
       .toList
@@ -147,12 +146,12 @@ object AutomateVolDiscoveryWindows extends App{
   } // END parseOutput()
   /**
     * seqParse()
-    * Take an IndexedSeq, split each and we get get a Seq of Seqs.
+    * Take a List, split each and we get get a List of Vectors.
     * @param volStrVector
     * @return Some[List[Vector[String]]]
     */
   def seqParse( volStrVector: List[String] ): Option[ List[Vector[String]] ] = {
-    val splitResult = volStrVector.map( _.split("\\s+" ).toVector )
+    val splitResult = volStrVector.map( _.split("\\s+").toVector )
 
     return Some(splitResult)
   } // END seqParse()

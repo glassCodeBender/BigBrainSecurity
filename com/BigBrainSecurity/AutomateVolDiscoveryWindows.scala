@@ -118,7 +118,7 @@ object AutomateVolDiscoveryWindows extends App{
     * @param volStr
     * @return Some[List[String]]
     */
-  def parseOutput(volStr: String): Option[List[String]] = {
+  def parseOutputDash(volStr: String): Option[List[String]] = {
     Some( Source.fromString(volStr)
       .getLines
       .dropWhile( !_.contains("------") )

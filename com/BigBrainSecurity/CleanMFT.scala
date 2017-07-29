@@ -275,7 +275,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     // Add Index
     /* matches all Strings that ran in Program Files or System32 */
     val regexSys32 = "^.+([Pp][Rr][Oo][Gg][Rr][Aa][Mm]\\s[Ff][Ii][Ll][Ee][Ss]" +
-    "|Ss][Yy][Ss][Tt][Ee][Mm]32).+[.exe]$"
+    "|Ss][Yy][Ss][Tt][Ee][Mm]32).+[.[Ee][Xx][Ee]$"
     /* Filter so only files that were born are included. */
     val filteredDF = df.filter($"MACB" === "B")
       .filterNot($"Short" === "FN2")
@@ -361,7 +361,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
   } // END processRegFile()
 
   def toCSV(df: DataFrame): Unit = {
-    val outputName = configMap("filtered_csv_output_location").get
+    val outputName = configMap("filtered_csv_output_location").getOrElse("love")
 
     df.write.format("com.databricks.spark.csv").save(outputName)
   }

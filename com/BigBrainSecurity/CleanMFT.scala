@@ -95,7 +95,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     /* Filter DataFrame to only include EXEs outside System32 or Program Files */
     if ( suspicious == true ) {
       val suspiciousDF = {
-        if ( indexDF != None ) filterSuspicious( indexDF )
+        if ( indexDF != "love" ) filterSuspicious( indexDF )
         else filterSuspicious( df )
       } // END val suspiciousDF
     } // END if (suspicious)
@@ -103,16 +103,16 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     /* Filter DataFrame by list of Strings (Regex) */
     if ( regexFile != "love" ) {
       val regDF = {
-        if ( suspiciousDF != None ) filterByFilename( suspiciousDF )
-        else if ( indexDF != None ) indexDF
+        if ( suspiciousDF != "love" ) filterByFilename( suspiciousDF )
+        else if ( indexDF != "love" ) indexDF
         else df
       } // END val regDF
     } // END if(regexFile)
 
     /* Stores the current state of the DataFrame */
     val theDF: DataFrame = {
-      if ( regDF != None ) regDF
-      else if ( suspiciousDF != None ) suspiciousDF
+      if ( regDF != "love" ) regDF
+      else if ( suspiciousDF != "love" ) suspiciousDF
       else if ( indexDF != None ) indexDF
       else df
     } // END theDF
@@ -258,8 +258,9 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     // val regexSys32 = """^.+(Program\sFiles|System32).+[.exe]$"""
 
     /* Filter the table based on the suspicious criteria. */
-    val filterDF = df.filterNot( $"Desc" rlike "^.+(Program\\sFiles|System32).+[.exe]$" )
-      .filter( $"Desc" rlike ".exe$" )
+    val filterDF = df.filterNot( $"Desc" rlike "^.+([Pp][Rr][Oo][Gg][Rr]" +
+      "[Aa][Mm]\\s[Ff][Ii][Ll][Ee][Ss]|[Ss][Yy][Ss][Tt][Ee][Mm]32).+[.[Ee][Xx][Ee]$" )
+      .filter( $"Desc" rlike ".[Ee][Xx][Ee]$" )
 
     return filterDF
   } // END filterSuspicious()
@@ -273,12 +274,13 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
   def findTimestomping ( df: DataFrame ): DataFrame = {
     // Add Index
     /* matches all Strings that ran in Program Files or System32 */
-    val regexSys32 = "^.+(Program\\sFiles|System32).+[.exe]$"
+    val regexSys32 = "^.+([Pp][Rr][Oo][Gg][Rr][Aa][Mm]\\s[Ff][Ii][Ll][Ee][Ss]" +
+    "|Ss][Yy][Ss][Tt][Ee][Mm]32).+[.exe]$"
     /* Filter so only files that were born are included. */
     val filteredDF = df.filter($"MACB" === "B")
       .filterNot($"Short" === "FN2")
       .filterNot($"Desc" rlike regexSys32)
-      .filter($"Desc" rlike ".exe$")
+      .filter($"Desc" rlike ".[Ee][Xx]Ee]$")
 
     return filteredDF
   } // END findTimestomping()

@@ -36,10 +36,10 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
   def runCleanMFT(): Unit = {
 
     /* Find file locations from config.txt */
-    val importFile = configMap("mft_csv_location").get
-    val regexFile = configMap("text_file_with_values_to_include_in_output").get
-    val outputName = configMap("filtered_csv_output_location").get
-    val allCSVDir = configMap("all_csv_output_destination_directory").get
+    val importFile = configMap("mft_csv_location").getOrElse("love")
+    val regexFile = configMap("text_file_with_values_to_include_in_output").getOrElse("love")
+    val outputName = configMap("filtered_csv_output_location").getOrElse("love")
+    val allCSVDir = configMap("all_csv_output_destination_directory")..getOrElse("love")
 
     /* Take config.txt input and place values in variables.  */
     val filterIndex: Boolean =  configMap("create_integer_index")
@@ -56,12 +56,12 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
       .toBoolean
 
     /* Locations to filter by */
-    lazy val startIndex = configMap("start_index").get
-    lazy val endIndex = configMap("end_index").get
-    lazy val startTime = configMap("start_time").get
-    lazy val endTime = configMap("end_time").get
-    lazy val startDate = configMap("start_date").get
-    lazy val endDate = configMap("end_date").get
+    lazy val startIndex = configMap("start_index").getOrElse("love")
+    lazy val endIndex = configMap("end_index").getOrElse("love")
+    lazy val startTime = configMap("start_time").getOrElse("love")
+    lazy val endTime = configMap("end_time").getOrElse("love")
+    lazy val startDate = configMap("start_date").getOrElse("love")
+    lazy val endDate = configMap("end_date").getOrElse("love")
 
     // Need to check and make sure that the importFile exists
 
@@ -89,7 +89,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
       */
 
     /* Filter DataFrame by index location */
-    if ( startIndex != None || endIndex != None )
+    if ( startIndex != "love"|| endIndex != "love" )
     val indexDF = indexFilter( df, startIndex, endIndex )
 
     /* Filter DataFrame to only include EXEs outside System32 or Program Files */
@@ -101,7 +101,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     } // END if (suspicious)
 
     /* Filter DataFrame by list of Strings (Regex) */
-    if ( !regexFile.isEmpty ) {
+    if ( regexFile != "love" ) {
       val regDF = {
         if ( suspiciousDF != None ) filterByFilename( suspiciousDF )
         else if ( indexDF != None ) indexDF
@@ -118,12 +118,12 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     } // END theDF
 
     /* Take user input and convert it into a timestamp(s) */
-    if ( startDate != None || endDate != None || startTime != None || endTime != None ) {
+    if ( startDate != "love" || endDate != "love" || startTime != "love" || endTime != "love" ) {
 
       /* Create Start and Stop Timestamps for filtering */
-      val (startStamp, endStamp) = makeTimeStamp( startDate.mkString, 
-        endDate.mkString, 
-        startTime.mkString, 
+      val (startStamp, endStamp) = makeTimeStamp( startDate.mkString,
+        endDate.mkString,
+        startTime.mkString,
         endTime.mkString )
       /* generate current state of DataFrame when filtering by timestamp. */
       val dateDF = filterByDate( theDF, startStamp, endStamp )
@@ -131,7 +131,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
 
     /* Filter DataFrame with default filter */
     if (defFilter) {
-      if(dateDF != None) val finalDf = defaultFilter(dateDF)
+      if(dateDF != "love") val finalDf = defaultFilter(dateDF)
       else val finalDF = defaultFilter(theDF)
     } // END if
 
@@ -141,8 +141,8 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
      */
 
     /* Save the processed Data to a compressed file. */
-    if (finalDF.isEmpty) {
-      if (dateDF != None) dateDF.saveAsSequenceFile(allCSVDir)
+    if (finalDF != "love") {
+      if (dateDF != "love") dateDF.saveAsSequenceFile(allCSVDir)
       else theDF.saveAsSequenceFile(allCSVDir)
       System.exit(0)
     } // END finalDF.isEmpty
@@ -214,8 +214,8 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     * @return DataFrame
     */
   def defaultFilter(df: DataFrame): DataFrame = {
-    val regexExt = ".exe$|.dll$|.rar$|.sys$|.jar$|.ps1$|.psd1$|" +
-      ".psm1$|.vb$|.cs$|.vbs$|.cpp$|.cp$|.sh$"
+    val regexExt = ".exe$|.rar$|.sys$|.jar$|.ps1$|.psd1$|.py$|.java$|.class$" +
+      ".+[cC][Oo][Mm][Pp]Ii]Ll]Ee]Rr].*|.psm1$|.vb$|.cs$|.vbs$|.cpp$|.cp$|.sh$"
 
     val updatedDF = df.filter( $"Type" === "File Modified")
       .filter( $"Type" === "MFT Entry" )
@@ -223,6 +223,8 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
 
     return updatedDF
   } // END defaultFilter()
+
+  // Write method to add descriptions onto each dll and for .exe
 
   /**
     * filterByFilename()
@@ -316,7 +318,7 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
   def updateReg ( fileName: String ): String = {
 
     /* import file - this can also be imported directly into a DataFrame */
-    val regArray = processRegFile(fileName).get
+    val regArray = processRegFile(fileName).getOrElse(ParArray[String]())
 
     /* Replace blank spaces with \\s and then concatenate Strings together*/
     val regexString = regArray.map(_.replaceAll(" ", "\\s"))

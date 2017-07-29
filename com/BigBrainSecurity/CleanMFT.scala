@@ -214,11 +214,14 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     * @return DataFrame
     */
   def defaultFilter(df: DataFrame): DataFrame = {
-    val regexExt = ".[Ee][Xx][Ee]$|.[rR][aA][Rr]$|.[Ss][Yy][Ss]$|.[Jj][Aa][Rr]$|.[pP][sS]1$|" +
-    ".[pP][Ss][Dd]1$|.[pP][yY]$|.[jJ][aA][vV][aA]$|.[cC][Ll][Aa][Ss][Ss]$|.[Pp][Mm]$|" +
-      ".+[cC][Oo][Mm][Pp]Ii]Ll]Ee]Rr].*|.[Pp][Ss][Mm]1$|.[Vv][Bb]$|.[Cc][Ss]$|.[Vv][Bb][Ss]$|" +
-      ".[Cc][Pp][Pp]$|.[Cc][Pp]$|.[Ss][Hh]$|.[Pp][Ll]$|" +
-    ".[Bb][Aa][Tt]$|.[Pp][Dd][Ff]$|.[Pp][Pp][Tt]$|.[Xx][Ll][Ss]$|.[Pp][Nn][Gg]$|.[Ww][Aa][Vv]$|.[Gg][Ii][Ff]$"
+    val regexExt = ".[Ee][Xx][Ee]$|.[rR][aA][Rr]$|.[Ss][Yy][Ss]$|.[Jj][Aa][Rr]$|.[pP][sS]1$|.[Pp][Ss][Dd]$|" +
+    ".[pP][Ss][Dd]1$|.[pP][yY]$|.[jJ][aA][vV][aA]$|.[cC][Ll][Aa][Ss][Ss]$|.[Pp][Mm]$|.[Mm][Oo][Vv]$|.[Zz][Ii][Pp]$|" +
+      ".+[cC][Oo][Mm][Pp]Ii]Ll]Ee]Rr].*|.[Pp][Ss][Mm]1$|.[Vv][Bb]$|.[Cc][Ss]$|.[Vv][Bb][Ss]$|.[Mm][Dd][Bb]$|" +
+      ".[Cc][Pp][Pp]$|.[Cc][Pp]$|.[Ss][Hh]$|.[Pp][Ll]$|.[Pp][Hh][Pp]$|[Cc][Ss][Ss]|.[Jj][Pp][Gg]$|.[Qq][Tt]$" +
+    ".[Bb][Aa][Tt]$|.[Pp][Dd][Ff]$|.[Pp][Pp][Tt]$|.[Xx][Ll][Ss]$|.[Pp][Nn][Gg]$|.[Ww][Aa][Vv]$|.[Gg][Ii][Ff]$" +
+    "|.[Tt][Aa][Rr]$|.[Jj][Pp][Ee][Gg]$|.[Ee][Pp][Ss]$|.[Bb][Mm][Pp]$|.[Aa][Ii][Ff]$|.[Aa][Vv][Ii]$|.[Dd][Oo][Cc]$" +
+    "|[Dd][Oo][Cc][Xx]$|.[yY][Aa][Ww][Ss]$|.[Ss][Ww][Ff]$|.[Pp][Hh][Pp][34]$|.[Rr][Bb]$|.[Aa][Xx][Dd]$|.[Aa][Xx][Ss]$" +
+    "|.[Aa][Xx][MmHhPp][Ss]$"
 
     val updatedDF = df.filter( $"Type" === "File Modified")
       .filter( $"Type" === "MFT Entry" )

@@ -214,8 +214,9 @@ class CleanMFT(val spark: SparkSession, val configMap: Map[String, Some[String]]
     * @return DataFrame
     */
   def defaultFilter(df: DataFrame): DataFrame = {
-    val regexExt = ".exe$|.rar$|.sys$|.jar$|.ps1$|.psd1$|.py$|.java$|.class$" +
-      ".+[cC][Oo][Mm][Pp]Ii]Ll]Ee]Rr].*|.psm1$|.vb$|.cs$|.vbs$|.cpp$|.cp$|.sh$"
+    val regexExt = ".exe$|.rar$|.sys$|.jar$|.ps1$|.psd1$|.py$|.java$|.class$|.pm$" +
+      ".+[cC][Oo][Mm][Pp]Ii]Ll]Ee]Rr].*|.psm1$|.vb$|.cs$|.vbs$|.cpp$|.cp$|.sh$|.pl$" +
+    ".bat$|.BAT$|.pdf$|.PDF$|.ppt$|.PPT$|.xls$|.XLS$|.png$|.PNG$|.wav$|.WAV$|.gif$|.GIF$"
 
     val updatedDF = df.filter( $"Type" === "File Modified")
       .filter( $"Type" === "MFT Entry" )
